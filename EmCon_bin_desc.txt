@@ -1,0 +1,14 @@
+#Bin descriptor for EmCon
+#Version Date: 1 August 2023
+
+bin 1
+    neutral
+    .{201-204}{230}
+
+bin 2
+    negative
+    .{211-214}{230}
+
+bin 3
+    animal
+    .{220}{230}

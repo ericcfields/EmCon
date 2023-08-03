@@ -1,0 +1,36 @@
+#Files to ignore for EmCon
+
+### File types to completely ignore ###
+*.ffs_db
+*.lnk
+*.set
+*.fdt
+*.cdt
+*.cdt.deo
+*.cdt.dpo
+*.erp
+*.asv
+*.exe
+*.dll
+*.DS_Store
+*.mat
+*.GND
+*.GRP
+*.docx
+*.xlsx
+*.pdf
+
+### Folders to completely ignore ###
+behav_data/*
+belist/*
+curry/*
+EEGsets/*
+ERPsets/*
+*__pycache__*
+code/old/*
+stats/old/*
+stats/results/*
+ICA/*
+
+### File subsets in folder to ignore ###
+arf/*.txt
