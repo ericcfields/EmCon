@@ -21,7 +21,7 @@ import pandas as pd
 
 def SDT(hits, misses, fas, crs):
     """ 
-    Returns a dict with signal detection measures given hits, misses, 
+    Calculate several signal detection measures from number of hits, misses,
     false alarms, and correct rejections
     
     adapted from:
@@ -40,7 +40,7 @@ def SDT(hits, misses, fas, crs):
     half_hit = 0.5 / (hits + misses)
     half_fa = 0.5 / (fas + crs)
  
-    # Calculate hit_rate and avoid d' infinity
+    # Calculate hit_rate and avoid d' = Inf
     hit_rate = hits / (hits + misses)
     if hit_rate == 1:
         print('WARNING: Hit rate = 1 and was replaced with 1 - 0.5/n')
@@ -49,7 +49,7 @@ def SDT(hits, misses, fas, crs):
         print('WARNING: Hit rate = 0 and was replaced with 0.5/n')
         hit_rate = half_hit
  
-    # Calculate false alarm rate and avoid d' infinity
+    # Calculate false alarm rate and avoid d' = Inf
     fa_rate = fas / (fas + crs)
     if fa_rate == 1:
         print('WARNING: FA rate = 1 and was replaced with 1 - 0.5/n')
@@ -58,10 +58,10 @@ def SDT(hits, misses, fas, crs):
         print('WARNING: FA rate = 0 and was replaced with 0.5/n')
         fa_rate = half_fa
         
-    #Calculate d', beta, c and Ad'
+    #Calculate parametric measures: d', beta, c and Az
     out = {}
-    out['d']    = sps.norm.ppf(hit_rate) - sps.norm.ppf(fa_rate) #d'
-    out['Ad']   = sps.norm.cdf(out['d'] / np.sqrt(2)) #AUC estimated from d'
+    out['dprime']    = sps.norm.ppf(hit_rate) - sps.norm.ppf(fa_rate) #d'
+    out['Az']   = sps.norm.cdf(out['d'] / np.sqrt(2)) #AUC estimated from d'
     out['beta'] = np.exp((sps.norm.ppf(fa_rate)**2 - sps.norm.ppf(hit_rate)**2) / 2) #β
     out['c']    = -(sps.norm.ppf(hit_rate) + sps.norm.ppf(fa_rate)) / 2 #criterion
     
@@ -217,7 +217,7 @@ def process_sub_mem_data(sub_id, mem_data=None, main_dir=None):
                                           'NEU_D_K_FARate', 'NEG_D_K_FARate', 'animal_D_K_FARate',
                                           'NEU_I_R_FARate', 'NEG_I_R_FARate', 'animal_I_R_FARate',
                                           'NEU_D_R_FARate', 'NEG_D_R_FARate', 'animal_D_R_FARate'])
-
+    
     for mem_test in ['I', 'D']:
         for val_cond in ['NEU', 'NEG', 'animal']:
             
@@ -262,8 +262,8 @@ def process_sub_mem_data(sub_id, mem_data=None, main_dir=None):
             
             #Signal detection measures
             SD_meas = SDT(hits, misses, FA, CR)
-            mem_data.at[sub_id, '%s_%s_%s' % (val_cond, mem_test, 'dprime')] = SD_meas['d']
-            mem_data.at[sub_id, '%s_%s_%s' % (val_cond, mem_test, 'Ad')] = SD_meas['Ad']
+            mem_data.at[sub_id, '%s_%s_%s' % (val_cond, mem_test, 'dprime')] = SD_meas['dprime']
+            mem_data.at[sub_id, '%s_%s_%s' % (val_cond, mem_test, 'Az')] = SD_meas['Az']
             mem_data.at[sub_id, '%s_%s_%s' % (val_cond, mem_test, 'criterion')] = SD_meas['c']
             mem_data.at[sub_id, '%s_%s_%s' % (val_cond, mem_test, 'A')] = SD_meas['A']
             mem_data.at[sub_id, '%s_%s_%s' % (val_cond, mem_test, 'B')] = SD_meas['B']
@@ -286,23 +286,23 @@ def process_sub(sub_id, main_dir=None, behav_data=None, mem_data=None, save_file
     behav_summary = join(main_dir, 'stats', 'behavioral', 'EmCon_EncBehav_summary.csv')
     if behav_data is None:
         if os.path.exists(behav_summary):
-            behav_data = pd.read_csv(behav_summary)
+            behav_data = pd.read_csv(behav_summary, index_col='sub_id')
         else:
             behav_data = None
     behav_data = process_sub_behav_data(sub_id, behav_data=behav_data, main_dir=main_dir)
     if save_files:
-        behav_data.to_csv(behav_summary)
+        behav_data.to_csv(behav_summary, index_label='sub_id')
     
     #Retrieval
     mem_summary = join(main_dir, 'stats', 'behavioral', 'EmCon_Memory_summary.csv')
     if mem_data is None:
         if os.path.exists(mem_summary):
-            mem_data = pd.read_csv(mem_summary)
+            mem_data = pd.read_csv(mem_summary, index_col='sub_id')
         else:
             mem_data = None
     mem_data = process_sub_mem_data(sub_id, mem_data=mem_data, main_dir=main_dir)
     if save_files:
-        mem_data.to_csv(mem_summary)
+        mem_data.to_csv(mem_summary, index_label='sub_id')
     
     return (behav_data, mem_data)
 

@@ -10,7 +10,7 @@
 %https://opensource.org/licenses/BSD-3-Clause
 
 %This script performs the following processing steps according to
-%parameters given below:
+%parameters given in EmCon_preproc_params
 % 1. Process behavioral data (see EmcCon_behav.py)
 % 2. Import data from curry .cdt file
 % 3. Fix any problems in raw data if there is a fix_raw script
@@ -19,7 +19,7 @@
 % 6. Re-reference the data
 % 7. Shift event codes to correct for trigger timing if specified in
 %    preproc_params file
-% 8. Delete long gaps between event codes
+% 8. Delete long gaps between event codes if specified in preproc_params file
 % 9. Apply filters with half-amplitude cut-offs specified in preproc_parmascfiles
 % 10. Bin and epoch data according to bin descriptor file
 
@@ -202,9 +202,13 @@ for i = 1:length(sub_ids)
 
     %% Delete breaks and gaps
     
-    EEG = pop_erplabDeleteTimeSegments(EEG, 'afterEventcodeBufferMS', 10e3, 'beforeEventcodeBufferMS', 10e3, 'displayEEG', 0, 'ignoreBoundary', 0, ...
-                                       'ignoreUseType', 'ignore', 'timeThresholdMS', 20e3);
-    [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, CURRENTSET, 'setname', [EEG.setname '_delgaps'], 'gui', 'off');
+    if gap_thresh
+        EEG = pop_erplabDeleteTimeSegments(EEG, 'afterEventcodeBufferMS', gap_buffer, ...
+                                           'beforeEventcodeBufferMS', gap_buffer, ...
+                                           'displayEEG', 0, 'ignoreBoundary', 0, ...
+                                           'ignoreUseType', 'ignore', 'timeThresholdMS', gap_thresh);
+        [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, CURRENTSET, 'setname', [EEG.setname '_delgaps'], 'gui', 'off');
+    end
     
 
     %% Filtering
@@ -230,11 +234,12 @@ for i = 1:length(sub_ids)
     [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, CURRENTSET, 'setname', [EEG.setname '_elist'], 'gui', 'off');
 
     %Assign events to bins
-    EEG  = pop_binlister(EEG, 'BDF', bin_desc_file, 'ExportEL', fullfile(main_dir, 'belist', [sub_id '_binlist.txt']), 'IndexEL', 1, 'SendEL2', 'EEG&Text', 'Voutput', 'EEG');
+    EEG  = pop_binlister(EEG, 'BDF', bin_desc_file, 'ExportEL', fullfile(main_dir, 'belist', [sub_id '_binlist.txt']), ...
+                         'IndexEL', 1, 'SendEL2', 'EEG&Text', 'Voutput', 'EEG');
     [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, CURRENTSET, 'setname', [EEG.setname '_bins'], 'gui', 'off');
 
-    %Extract epochs from bins
-    EEG = pop_epochbin(EEG, epoch_time,  epoch_time);
+    %Epoch the data; use the mean of the full epoch as the baseline
+    EEG = pop_epochbin(EEG, epoch_time, epoch_time);
     [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, CURRENTSET, 'setname', [EEG.setname '_be'], 'gui', 'off');
     
     %Check bin counts
