@@ -11,6 +11,12 @@
 %Author: Eric Fields
 %Version Date: 12 March 2019
 
+%Copyright (c) 2023, Eric Fields
+%All rights reserved.
+%This code is free and open source software made available under the terms 
+%of the 3-clause BSD license:
+%https://opensource.org/licenses/BSD-3-Clause
+
 function files = get_files(directory, extension)
     
     %Get cell array of files

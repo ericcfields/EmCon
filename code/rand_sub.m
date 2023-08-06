@@ -17,6 +17,12 @@
 %Author: Eric Fields
 %Version Date: 23 July 2023
 
+%Copyright (c) 2023, Eric Fields
+%All rights reserved.
+%This code is free and open source software made available under the terms 
+%of the 3-clause BSD license:
+%https://opensource.org/licenses/BSD-3-Clause
+
 function sub_id = rand_sub(present, missing, main_dir)
 
     %Set defaults for missing arguments

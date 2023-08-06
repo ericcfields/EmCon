@@ -1,6 +1,13 @@
 %Artifact rejection script for EmCon
+%
 %AUTHOR: Eric Fields
-%VERSION DATE: 5 August 2023
+%VERSION DATE: 6 August 2023
+
+%Copyright (c) 2023, Eric Fields
+%All rights reserved.
+%This code is free and open source software made available under the terms 
+%of the 3-clause BSD license:
+%https://opensource.org/licenses/BSD-3-Clause
 
 %%% ICA correction %%%
 
@@ -17,7 +24,7 @@
 
 %%% Artifact detection & rejection %%%
 
-%Each routine below has three paramters:
+%Each routine below has three parameters:
 % 1. A voltage threshold in microvolts
 % 2. The size of the moving window in milliseconds
 % 3. The step bewteen consecutive moving window segments

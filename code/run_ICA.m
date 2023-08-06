@@ -1,7 +1,14 @@
-%Run ICA on epoched data for LER
+%Run ICA for all subjects with pre-ICA rejection information but not ICA
+%weights
 %
 %Author: Eric Fields
-%Version Date: 2 August 2023
+%Version Date: 6 August 2023
+
+%Copyright (c) 2023, Eric Fields
+%All rights reserved.
+%This code is free and open source software made available under the terms 
+%of the 3-clause BSD license:
+%https://opensource.org/licenses/BSD-3-Clause
 
 clearvars; close all;
 
@@ -37,7 +44,7 @@ for i = 1:length(sub_ids)
     assert(abs(mean(EEG.data(:))) < 0.1);
     
     %Load bad epochs
-    bad_epochs = logical(csvread(fullfile(main_dir, 'ICA', [sub_id '_bad_epochs.csv'])));
+    bad_epochs = logical(readmatrix(fullfile(main_dir, 'ICA', [sub_id '_bad_epochs.csv'])));
     
     %Remove bad epochs
     if ~isempty(bad_epochs) && any(bad_epochs)
@@ -53,7 +60,7 @@ for i = 1:length(sub_ids)
     end
     
     %Exclude chans
-    exc_chaninds = csvread(fullfile(main_dir, 'ICA', [sub_id, '_exclude_chans.csv']));
+    exc_chaninds = readmatrix(fullfile(main_dir, 'ICA', [sub_id, '_exclude_chans.csv']));
     inc_chaninds = find(~ismember(1:length(EEG.chanlocs), exc_chaninds));
     
     %% Run ICA

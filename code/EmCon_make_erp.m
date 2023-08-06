@@ -1,7 +1,13 @@
-%Create an ERPset from a postart EEGset
+%Create an ERPset from a postart EEGset for EmCon
 %
 %Author: Eric Fields
-%Version Date: 2 August 2023
+%Version Date: 6 August 2023
+
+%Copyright (c) 2023, Eric Fields
+%All rights reserved.
+%This code is free and open source software made available under the terms 
+%of the 3-clause BSD license:
+%https://opensource.org/licenses/BSD-3-Clause
 
 
 %% Paremeters and Set-up

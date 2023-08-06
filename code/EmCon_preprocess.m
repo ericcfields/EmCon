@@ -1,17 +1,28 @@
 %Preprocessing script for EmCon
 %
 %AUTHOR: Eric Fields
-%VERSION DATE: 5 August 2023
+%VERSION DATE: 6 August 2023
+
+%Copyright (c) 2023, Eric Fields
+%All rights reserved.
+%This code is free and open source software made available under the terms 
+%of the 3-clause BSD license:
+%https://opensource.org/licenses/BSD-3-Clause
 
 %This script performs the following processing steps according to
 %parameters given below:
-% 1. Import data from curry .cdt file
-% 2. Assign channel locations and delete blank channels
-% 3. Re-reference the data
-% 4. Shift event codes to correct for delay
-% 5. Delete gaps and breaks
-% 6. Apply filters with half-amplitude cut-offs given
-% 7. Bin and epoch data according to bin descriptor file
+% 1. Process behavioral data (see EmcCon_behav.py)
+% 2. Import data from curry .cdt file
+% 3. Fix any problems in raw data if there is a fix_raw script
+% 4. Delete any channels specified in preproc_params file
+% 5. Downsample the data if specified in preproc_params file
+% 6. Re-reference the data
+% 7. Shift event codes to correct for trigger timing if specified in
+%    preproc_params file
+% 8. Delete long gaps between event codes
+% 9. Apply filters with half-amplitude cut-offs specified in preproc_parmascfiles
+% 10. Bin and epoch data according to bin descriptor file
+
 
 %clear the workspace and close all figures/windows
 clearvars; close all;
@@ -24,6 +35,7 @@ EmCon_preproc_params;
 
 %String, cell array, or text file giving IDs of subjects to process
 % subject_ids = get_subset('bdf', 'raw', main_dir);
+
 
 %% ***** SET-UP *****
 
@@ -88,7 +100,7 @@ for i = 1:length(sub_ids)
     
     sub_id = sub_ids{i};
 
-    %start EEGLAB
+    %start (or re-start) EEGLAB
     [ALLEEG, EEG, CURRENTSET, ALLCOM] = eeglab; %#ok<ASGLU>
     
 
@@ -120,7 +132,7 @@ for i = 1:length(sub_ids)
         
         %Fix problems in recorded data (e.g., switched electrodes)
         if exist(fullfile(main_dir, 'code', 'fix_raw', [sub_id '_fix_raw.m']), 'file')
-            addpath(fullefile(main_dir, 'code', 'fix_raw'));
+            addpath(fullfile(main_dir, 'code', 'fix_raw'));
             run(fullfile(main_dir, 'code', 'fix_raw', [sub_id '_fix_raw.m']));
         end
         

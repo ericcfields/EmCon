@@ -16,6 +16,12 @@
 %Author: Eric Fields
 %Version Date: 12 March 2019
 
+%Copyright (c) 2023, Eric Fields
+%All rights reserved.
+%This code is free and open source software made available under the terms 
+%of the 3-clause BSD license:
+%https://opensource.org/licenses/BSD-3-Clause
+
 function [ec_counts, all_events] = get_event_code_counts(EEG, output_file)
     
     %Default to no output file
@@ -33,11 +39,11 @@ function [ec_counts, all_events] = get_event_code_counts(EEG, output_file)
         all_events = cell2mat({EEG.event.type})';
     end
     
-    % %Check that only codes 1 - 255 exist
-    % all_event_codes = unique(all_events);
-    % if ~all(ismember(all_event_codes, 1:255))
-    %     error('get_event_code_counts assumes that only codes 1-255 are possible, but other event codes were found.');
-    % end
+    %Check that only codes 1 - 255 exist
+    all_event_codes = unique(all_events);
+    if ~all(ismember(all_event_codes, 1:255))
+        error('get_event_code_counts assumes that only codes 1-255 are possible, but other event codes were found.');
+    end
     
     %Get counts for all possible event codes
     ec_counts = NaN(255, 2);

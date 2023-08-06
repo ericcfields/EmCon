@@ -1,7 +1,13 @@
 %Convenience function to run behavioral data processing code for EmCon
 %
 %AUTHOR: Eric Fields
-%VERSION DATE: 5 August 2023
+%VERSION DATE: 6 August 2023
+
+%Copyright (c) 2023, Eric Fields
+%All rights reserved.
+%This code is free and open source software made available under the terms 
+%of the 3-clause BSD license:
+%https://opensource.org/licenses/BSD-3-Clause
 
 function EmCon_behav(sub_id)
 

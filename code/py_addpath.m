@@ -23,7 +23,9 @@
 
 %Copyright (c) 2017, Eric Fields
 %All rights reserved.
-%This code is free and open source software made available under the 3-clause BSD license.
+%This code is free and open source software made available under the terms 
+%of the 3-clause BSD license:
+%https://opensource.org/licenses/BSD-3-Clause
 
 function new_py_path = py_addpath(directory, MATLAB_too)
     

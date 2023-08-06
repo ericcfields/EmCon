@@ -12,14 +12,15 @@
 %Author: Eric Fields
 %Version Date: 15 February 2018
 
-%Copyright (c) 2018, Eric Fields
+%Copyright (c) 2023, Eric Fields
 %All rights reserved.
 %This code is free and open source software made available under the terms 
 %of the 3-clause BSD license:
 %https://opensource.org/licenses/BSD-3-Clause
 
 function [chan_rej_array, chan_rej_numeric] = chan_rej_report(EEG, printout)
-
+    
+    %Set default input
     if nargin < 2
         printout = true;
     end

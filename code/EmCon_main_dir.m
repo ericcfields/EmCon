@@ -1,11 +1,17 @@
 %Define main data directory for EmCon
 %
 %Author: Eric Fields
-%Version Date: 1 August 2023
+%Version Date: 6 August 2023
+
+%Copyright (c) 2023, Eric Fields
+%All rights reserved.
+%This code is free and open source software made available under the terms 
+%of the 3-clause BSD license:
+%https://opensource.org/licenses/BSD-3-Clause
 
 function main_dir = EmCon_main_dir()
 
-    %Defin main directory
+    %Define main directory
     main_dir = 'C:\Users\fieldsec\OneDrive - Westminster College\Documents\ECF\Research\EmCon\DATA';
     
     %Make sure the directory exists

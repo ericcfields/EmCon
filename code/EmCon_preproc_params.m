@@ -1,7 +1,13 @@
 %Processing parameters for EmCon
 %
 %Author: Eric Fields
-%Version Date: 5 August 2023
+%Version Date: 6 August 2023
+
+%Copyright (c) 2023, Eric Fields
+%All rights reserved.
+%This code is free and open source software made available under the terms 
+%of the 3-clause BSD license:
+%https://opensource.org/licenses/BSD-3-Clause
 
 %Get main data directory
 main_dir = EmCon_main_dir();
@@ -27,7 +33,7 @@ low_pass  = false;
 epoch_time    = [-250, 1150];
 baseline_time = [-200, -1];
 
-%Empty channels to remove
+%Channels to remove immediately after import
 remove_chans = {'TRIGGER', 'F11', 'F12', 'FT11', 'FT12'};
 
 %New sampling rate

@@ -1,4 +1,4 @@
-%Return subset of subjects based on the presence of biosemi file or EEGset
+%Return subset of subjects based on the presence of curry file or EEGset
 %type and absence of another EEGset type
 %
 %INPUTS
@@ -12,7 +12,6 @@
 % Possible inputs for present and missing:
 %  - 'curry'
 %  - 'raw'
-%  - 'car'
 %  - 'ICA'
 %  - 'preart'
 %  - 'postart'
@@ -22,7 +21,13 @@
 % Default with no input is equivalent to get_subset('curry')
 %
 %Author: Eric Fields
-%Version Date: 23 July 2023
+%Version Date: 6 August 2023
+
+%Copyright (c) 2023, Eric Fields
+%All rights reserved.
+%This code is free and open source software made available under the terms 
+%of the 3-clause BSD license:
+%https://opensource.org/licenses/BSD-3-Clause
 
 function subs_subset = get_subset(present, missing, main_dir)
 
@@ -38,7 +43,7 @@ function subs_subset = get_subset(present, missing, main_dir)
     end
     
     %Check inputs
-    allowed_inputs = {'curry', 'raw', 'car', 'ICA', 'preart', 'postart', 'erp', 'bad_epochs'};
+    allowed_inputs = {'curry', 'raw', 'ICA', 'preart', 'postart', 'erp', 'bad_epochs'};
     if ~any(strcmpi(present, allowed_inputs))
         error('Input is incorrect. See >>help get_subset');
     end
