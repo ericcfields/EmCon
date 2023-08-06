@@ -18,9 +18,9 @@
 %    blink_corr = true;
 
 %For more information on ICA correction see:
-%https://sccn.ucsd.edu/wiki/Chapter_09:_Decomposing_Data_Using_ICA
-%https://sccn.ucsd.edu/wiki/Chapter_10:_Working_with_ICA_components
-%https://mitpress.mit.edu/sites/default/files/8575_006a_0.pdf
+%https://eeglab.org/tutorials/06_RejectArtifacts/RunICA.html
+%Ch. 6 Supplement in Luck (2014). An Introduction to the Event-Related
+%Potential Technique, 2nd ed. MIT Press.
 
 %%% Artifact detection & rejection %%%
 
@@ -37,12 +37,22 @@
 %Usually you will adjust voltage thresholds and leave the time window
 %parameters the same
 
-%For more on the detection routines and parameters, see: http://erpinfo.org/erplab/erplab-documentation/tutorial_4/Artifact_Detection.html
+%For more on the detection routines and parameters, see:
+%https://github.com/ucdavis/erplab/wiki/Tutorial-1-EEG-to-ERPset#artifact-detection
+%https://github.com/ucdavis/erplab/wiki/Artifact-Detection-in-Epoched-Data
+%Ch. 6 in Luck (2014). An Introduction to the Event-Related
+%Potential Technique, 2nd ed. MIT Press.
 
 
 %% ************************************************************************
 %*****************************  PARAMETERS  *******************************
 %**************************************************************************
+
+%Some parameters
+EmCon_preproc_params;
+num_chans = length(EEG.chanlocs);
+EEGchans = 1:(num_chans-2);
+art_chan_low_pass = 15;
 
 %Independent components to remove from data (if nonre, ICrej = false)
 ICrej = false;
@@ -66,18 +76,21 @@ blink_windowstep = 25;
 step_thresh      = 60;
 step_windowsize  = 400;
 step_windowstep  = 25;
+step_chans = 1:num_chans;
 
 %Peak to peak amplitude for all channels
 %Flag 4
 ppa_thresh       = 300;
 ppa_windowsize   = 200;
 ppa_windowstep   = 25;
+ppa_chans = 1:num_chans;
 
 %Step-based drift detection
 %Flag 5
 drift_thresh     = 60;
 drift_windowsize = 1000;
 drift_windowstep = 50;
+drift_chans = 1:num_chans;
 
 %Epoch numbers for trials that need to be manually rejected
 %Flag 6 
@@ -126,14 +139,6 @@ end
 cd(main_dir);
 addpath('code');
 addpath(fullfile('code', 'arf'));
-
-%Import parameters
-EmCon_preproc_params;
-
-%Some parameters
-num_chans = length(EEG.chanlocs);
-EEGchans = 1:(num_chans-2);
-art_chan_low_pass = 15;
 
 
 %% ***** ARTIFACT DETECTION *****
@@ -201,19 +206,27 @@ if blink_corr
 else
     blink_rej_window = rej_window;
 end
-EEG  = NCL_pop_artmwppth(EEG, 'Channel', blink_chan, 'Flag', [1, 2], 'Threshold', blink_thresh, 'Twindow', blink_rej_window, 'Windowsize', blink_windowsize, 'Windowstep', blink_windowstep, 'Review', 'off');
+EEG  = NCL_pop_artmwppth(EEG, 'Channel', blink_chan, 'Flag', [1, 2], 'Threshold', blink_thresh, ...
+                         'Twindow', blink_rej_window, 'Windowsize', blink_windowsize, ...
+                         'Windowstep', blink_windowstep, 'Review', 'off');
 plotthresh.addFilter('Name','Blink','Channels',blink_chan,'Type','NCL_pop_artmwppth','Threshold',blink_thresh);
 
 %Step function based detection
-EEG  = NCL_pop_artstep(EEG, 'Channel', 1:num_chans, 'Flag', [1, 3], 'Threshold', step_thresh, 'Twindow', rej_window, 'Windowsize', step_windowsize, 'Windowstep', step_windowstep, 'Review', 'off');
+EEG  = NCL_pop_artstep(EEG, 'Channel', step_chans, 'Flag', [1, 3], 'Threshold', ...
+                       step_thresh, 'Twindow', rej_window, 'Windowsize', step_windowsize, ...
+                       'Windowstep', step_windowstep, 'Review', 'off');
 plotthresh.addFilter('Name','Step','Channels',[1:num_chans, biEOG_chan],'Type','NCL_pop_artstep','Threshold',step_thresh);
 
 %Peak to peak amplitude detection
-EEG  = NCL_pop_artmwppth(EEG, 'Channel', 1:num_chans, 'Flag', [1, 4], 'Threshold', ppa_thresh, 'Twindow', rej_window, 'Windowsize', ppa_windowsize, 'Windowstep', ppa_windowstep, 'Review', 'off');
+EEG  = NCL_pop_artmwppth(EEG, 'Channel', ppa_chans, 'Flag', [1, 4], 'Threshold', ppa_thresh, ...
+                         'Twindow', rej_window, 'Windowsize', ppa_windowsize, ...
+                         'Windowstep', ppa_windowstep, 'Review', 'off');
 plotthresh.addFilter('Name','Pk-Pk','Channels',1:num_chans,'Type','NCL_pop_artmwppth','Threshold',ppa_thresh);
 
 %Drift detection
-EEG  = NCL_pop_artstep(EEG, 'Channel', EEGchans, 'Flag', [1, 5], 'Threshold', drift_thresh, 'Twindow', rej_window, 'Windowsize', drift_windowsize, 'Windowstep', drift_windowstep, 'Review', 'off');
+EEG  = NCL_pop_artstep(EEG, 'Channel', drift_chans, 'Flag', [1, 5], 'Threshold', drift_thresh, ...
+                       'Twindow', rej_window, 'Windowsize', drift_windowsize, ...
+                       'Windowstep', drift_windowstep, 'Review', 'off');
 plotthresh.addFilter('Name','Drift','Channels',EEGchans,'Type','NCL_pop_artstep','Threshold',drift_thresh);
 
 %Manual rejection
@@ -247,7 +260,7 @@ end
 [ALLEEG, EEG, CURRENTSET] = eeg_store(ALLEEG, EEG, CURRENTSET);
 
 %Rejection report
-[~, ~, ~, rej_by_bin] = pop_summary_AR_eeg_detection(EEG,'none');
+[~, ~, ~, rej_by_bin] = pop_summary_AR_eeg_detection(EEG, 'none');
 chan_rej_array = chan_rej_report(EEG);
 
 %Plot threshold table window
@@ -255,6 +268,7 @@ chan_rej_array = chan_rej_report(EEG);
 % if ~batch_proc
 %     plotthresh.update;
 % end
+
 
 %% ***** REVIEW & SAVE *****
 
@@ -285,7 +299,7 @@ if save_rej
     EEG = pop_summary_AR_eeg_detection(EEG,fullfile(main_dir, 'belist', [sub_id '_AR_summary' '.txt']));
     %Compute ERPs if requested
     if ~exist('compute_erps', 'var')
-        user_resp = input('Compute ERPs?(y/n): ','s');
+        user_resp = input('Compute ERPs?(y/n): ', 's');
         if strcmpi(user_resp, 'y')
             compute_erps = true;
         else
@@ -297,8 +311,7 @@ if save_rej
     end
 else
     %If user chooses not to save, delete ar EEGsets and return to preart set
-    preart_set = CURRENTSET - 2;
-    CURRENTSET = preart_set;
+    CURRENTSET = CURRENTSET - 2;
     EEG = ALLEEG(CURRENTSET);
     ALLEEG = ALLEEG(1:CURRENTSET);
 end

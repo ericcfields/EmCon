@@ -25,10 +25,9 @@ belist/*
 curry/*
 EEGsets/*
 ERPsets/*
-psychopy*
+psychopy/*
 *__pycache__*
 code/old/*
 
 ### File subsets in folder to ignore ###
 stats/behavioral/*.csv
-stats/behavioral/*.xlsx
