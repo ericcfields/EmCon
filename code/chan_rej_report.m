@@ -10,7 +10,7 @@
 %                    order that channels appear in chanlocs
 %
 %Author: Eric Fields
-%Version Date: 15 February 2018
+%Version Date: 6 August 2023
 
 %Copyright (c) 2023, Eric Fields
 %All rights reserved.
@@ -31,8 +31,12 @@ function [chan_rej_array, chan_rej_numeric] = chan_rej_report(EEG, printout)
     
     if printout
         %Split table for easier display
-        midp = round(length(chan_rej_array)/2, 0);
-        split_chan_rej_array = [chan_rej_array(1:midp, :) chan_rej_array(midp+1:end, :)];
+        split_chan_rej_array = chan_rej_array;
+        if mod(length(split_chan_rej_array), 2)
+            split_chan_rej_array(end+1, :) = {'', NaN};
+        end
+        midp = round(length(split_chan_rej_array)/2, 0);
+        split_chan_rej_array = [split_chan_rej_array(1:midp, :) split_chan_rej_array(midp+1:end, :)];
 
         %Display at console
         fprintf('\nRejected trials by electrode: \n');

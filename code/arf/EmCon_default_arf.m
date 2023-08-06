@@ -171,13 +171,6 @@ if ICrej
     [ALLEEG, EEG, CURRENTSET] = eeg_store(ALLEEG, EEG, CURRENTSET);
 end
 
-%Create biEGO channel
-biEOG_chan = num_chans + 2;
-biEOG_syntax = sprintf('ch%d = ch%d - ch%d label biEOG', biEOG_chan, find(strcmpi({EEG.chanlocs.labels},'VEOG')), find(strcmp({EEG.chanlocs.labels}, 'HEOG')));
-EEG = pop_eegchanoperator(EEG, {biEOG_syntax}, 'ErrorMsg', 'popup', 'Warning', 'off');
-EEG = pop_basicfilter(EEG, biEOG_chan, 'Cutoff',  art_chan_low_pass, 'Design', 'butter', 'Filter', 'lowpass', 'Order',  2);
-[ALLEEG, EEG, CURRENTSET] = eeg_store(ALLEEG, EEG, CURRENTSET);
-
 %Interpolate electrodes
 if ~isempty(interpolate_electrodes)
     interp_idx = find(ismember({EEG.chanlocs.labels}, interpolate_electrodes));
@@ -215,19 +208,19 @@ plotthresh.addFilter('Name','Blink','Channels',blink_chan,'Type','NCL_pop_artmwp
 EEG  = NCL_pop_artstep(EEG, 'Channel', step_chans, 'Flag', [1, 3], 'Threshold', ...
                        step_thresh, 'Twindow', rej_window, 'Windowsize', step_windowsize, ...
                        'Windowstep', step_windowstep, 'Review', 'off');
-plotthresh.addFilter('Name','Step','Channels',[1:num_chans, biEOG_chan],'Type','NCL_pop_artstep','Threshold',step_thresh);
+plotthresh.addFilter('Name','Step','Channels',step_chans,'Type','NCL_pop_artstep','Threshold',step_thresh);
 
 %Peak to peak amplitude detection
 EEG  = NCL_pop_artmwppth(EEG, 'Channel', ppa_chans, 'Flag', [1, 4], 'Threshold', ppa_thresh, ...
                          'Twindow', rej_window, 'Windowsize', ppa_windowsize, ...
                          'Windowstep', ppa_windowstep, 'Review', 'off');
-plotthresh.addFilter('Name','Pk-Pk','Channels',1:num_chans,'Type','NCL_pop_artmwppth','Threshold',ppa_thresh);
+plotthresh.addFilter('Name','Pk-Pk','Channels',ppa_chans,'Type','NCL_pop_artmwppth','Threshold',ppa_thresh);
 
 %Drift detection
 EEG  = NCL_pop_artstep(EEG, 'Channel', drift_chans, 'Flag', [1, 5], 'Threshold', drift_thresh, ...
                        'Twindow', rej_window, 'Windowsize', drift_windowsize, ...
                        'Windowstep', drift_windowstep, 'Review', 'off');
-plotthresh.addFilter('Name','Drift','Channels',EEGchans,'Type','NCL_pop_artstep','Threshold',drift_thresh);
+plotthresh.addFilter('Name','Drift','Channels',drift_chans,'Type','NCL_pop_artstep','Threshold',drift_thresh);
 
 %Manual rejection
 if manual_reject
@@ -265,9 +258,9 @@ chan_rej_array = chan_rej_report(EEG);
 
 %Plot threshold table window
 %Window can be shown via EEGPLOT window > Display >
-% if ~batch_proc
-%     plotthresh.update;
-% end
+if ~batch_proc
+    plotthresh.update;
+end
 
 
 %% ***** REVIEW & SAVE *****
@@ -279,8 +272,8 @@ if batch_proc
 else
     %If not batch processing:
     %Open window for visual inspection
-    %ECF_pop_eegplot(EEG, 1, 1, 0, rej_window);
-    pop_eegplot(EEG, 1, 1, 0);
+    ECF_pop_eegplot(EEG, 1, 1, 0, rej_window);
+    %pop_eegplot(EEG, 1, 1, 0);
     %User decides whether to save current rejection scheme
     user_resp = input('Save artifact rejection?(y/n): ','s');
     if strcmpi(user_resp, 'y')
