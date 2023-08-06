@@ -239,7 +239,7 @@ for i = 1:length(sub_ids)
     [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, CURRENTSET, 'setname', [EEG.setname '_bins'], 'gui', 'off');
 
     %Epoch the data; use the mean of the full epoch as the baseline
-    EEG = pop_epochbin(EEG, epoch_time, epoch_time);
+    EEG = pop_epochbin(EEG, epoch_time, 'all');
     [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, CURRENTSET, 'setname', [EEG.setname '_be'], 'gui', 'off');
     
     %Check bin counts

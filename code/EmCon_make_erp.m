@@ -1,5 +1,10 @@
 %Create an ERPset from a postart EEGset for EmCon
 %
+%If an EEGset is currently loaded, this script will create ERPs from the
+%current EEGset.
+%If no EEGset is loaded, it will ask for a subject ID, load the
+%postart EEGset, and creates ERPs from this set.
+%
 %Author: Eric Fields
 %Version Date: 6 August 2023
 
@@ -26,10 +31,30 @@ if ~exist('batch_proc', 'var')
 end
 
 
+%% Import EEG data (if necessary)
+
+%Get subject ID
+if ~exist('EEG', 'var') && ~batch_proc
+
+    %Get subject ID
+    sub_id = input('\nSubject ID:  ', 's');
+
+    %start EEGLAB
+    [ALLEEG, EEG, CURRENTSET, ALLCOM] = eeglab; %#ok<ASGLU>
+
+    %Load post-artifact rejection dataset
+    EEG = pop_loadset('filename', [sub_id '_postart.set'], 'filepath', fullfile(main_dir, 'EEGsets'));
+    [ALLEEG, EEG, CURRENTSET] = eeg_store(ALLEEG, EEG, 0);
+
+end
+
+
 %% Make ERP
 
 %Create ERP
-ERP = pop_averager(ALLEEG, 'Criterion', 'good', 'DSindex', CURRENTSET, 'ExcludeBoundary', 'on', 'SEM', 'on');
+ERP = pop_averager(ALLEEG, 'Criterion', 'good', ...
+                   'DQ_custom_wins', 0, 'DQ_flag', 1, 'DQ_preavg_txt', 0, ...
+                   'DSindex', CURRENTSET, 'ExcludeBoundary', 'on', 'SEM', 'on');
 if isempty(ALLERP)
     ALLERP = ERP;
     CURRENTERP = 1;
@@ -47,14 +72,16 @@ if batch_proc
 else
     erp_overwrite_warn = 'on';
 end
-ERP = pop_savemyerp(ERP, 'erpname', sub_id, 'filename', [sub_id '.erp'], 'filepath', fullfile(main_dir, 'ERPsets'), 'Warning', erp_overwrite_warn);
+ERP = pop_savemyerp(ERP, 'erpname', sub_id, 'filename', [sub_id '.erp'], ...
+                    'filepath', fullfile(main_dir, 'ERPsets'), 'Warning', erp_overwrite_warn);
 ALLERP(CURRENTERP) = ERP;
 
 
 %% Create filtered set for viewing
 
 if ~batch_proc
-    ERP = pop_filterp(ERP, 1:num_chans, 'Cutoff', lp_cutoff, 'Design', 'butter', 'Filter', 'lowpass', 'Order', 2);
+    u_chans = find(~strcmp({ERP.chanlocs.labels}, 'blink'));
+    ERP = pop_filterp(ERP, u_chans, 'Cutoff', lp_cutoff, 'Design', 'butter', 'Filter', 'lowpass', 'Order', 2);
     ERP.erpname = sprintf('%s_%dHzLP', ERP.erpname, lp_cutoff);
     ERP.filename = ''; ERP.filepath = '';
     CURRENTERP = CURRENTERP + 1;
@@ -69,24 +96,24 @@ if ~batch_proc
     bin_sets = {[5, 6]};
     for b = 1:length(bin_sets)
         bins = bin_sets{b};
-        ERP = pop_ploterps(ERP, [1, 2], [1:28, 30], ...
+        ERP = pop_ploterps(ERP, [1, 2], u_chans, ...
                            'AutoYlim', 'on', ...
-                           'Axsize', [ 0.05 0.08], ...
+                           'Axsize', [0.05, 0.08], ...
                            'BinNum', 'on', ...
                            'Blc', 'no', ...
-                           'Box', [ 6 5], ...
+                           'Box', [6, 5], ...
                            'ChLabel', 'on', ...
                            'FontSizeChan',  10, ...
                            'FontSizeLeg',  12, ...
                            'FontSizeTicks',  10, ...
                            'LegPos', 'bottom', ...
-                           'Linespec', {'k-' , 'r-' }, ...
-                           'LineWidth',  1, ...
+                           'Linespec', {'k-', 'r-'}, ...
+                           'LineWidth', 1, ...
                            'Maximize', 'on', ...
                            'Style', 'Classic', ...
                            'Tag', 'ERP_figure', ...
                            'Transparency',  0, ...
-                           'xscale', [ -200.0, 800.0, -200:200:800], ...
+                           'xscale', [-200.0, 800.0, -200:200:800], ...
                            'YDir', 'reverse' );            
     end
 

@@ -115,6 +115,13 @@ manual_unreject = false;
 
 %% ***** SET-UP *****
 
+%This script should not be run on a dataset that has already had artifact
+%rejection performed.
+if strfind(EEG.setname, 'ar')
+    error(['This script should only be run on data that has not had artifact correction or rejection applied. ' ...
+           'To restart fresh, run from_preart again before running this script'])
+end
+
 %Set some variables if not previously set
 if ~exist('main_dir', 'var')
     arffile_path = mfilename('fullpath');
