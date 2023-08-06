@@ -72,7 +72,7 @@ def SDT(hits, misses, fas, crs):
     return out
 
 
-def process_sub_behav_data(sub_id, behav_data=None, main_dir=None):
+def process_sub_behav_data(sub_id, main_dir=None, behav_data=None):
     """
     Calculate accuracy and reaction time for the encoding task for sub_id 
     and add to dataframe in mem_data
@@ -81,7 +81,7 @@ def process_sub_behav_data(sub_id, behav_data=None, main_dir=None):
     if main_dir is None:
         main_dir = os.getcwd()
     
-    behav_dir = join(main_dir, 'behav_data')
+    behav_dir = join(main_dir, 'psychopy')
     
     ############## IMPORT ENCODING DATA ##############
     
@@ -106,7 +106,8 @@ def process_sub_behav_data(sub_id, behav_data=None, main_dir=None):
     enc_data['gamepad_resp_rt'] += gp_delay
 
     #Initalize data frame
-    behav_data = pd.DataFrame()
+    if behav_data is None:
+        behav_data = pd.DataFrame()
 
     #Trial numbers
     for cond in ['NEU', 'NEG', 'animal']:
@@ -127,7 +128,7 @@ def process_sub_behav_data(sub_id, behav_data=None, main_dir=None):
                 corr_resp = 4
             elif resp_hand == 'L':
                 corr_resp = 5
-        
+        #Calculate accuracy
         behav_data.loc[sub_id, cond+'_acc'] = np.mean(enc_data.loc[enc_data['condition'] == cond,
                                                                    'gamepad_resp_keys'] == corr_resp)
 
@@ -153,7 +154,7 @@ def process_sub_mem_data(sub_id, mem_data=None, main_dir=None):
     if main_dir is None:
         main_dir = os.getcwd()
     
-    behav_dir = join(main_dir, 'behav_data')
+    behav_dir = join(main_dir, 'psychopy')
     
     ############## IMPORT MEMORY DATA ##############
     
@@ -277,7 +278,7 @@ def process_sub(sub_id, main_dir=None, behav_data=None, mem_data=None, save_file
     """
     
     #Encoding
-    behav_summary = join(main_dir, 'behav_data', 'results', 'EmCon_EncBehav_summary.csv')
+    behav_summary = join(main_dir, 'stats', 'behavioral', 'EmCon_EncBehav_summary.csv')
     if behav_data is None:
         if os.path.exists(behav_summary):
             behav_data = pd.read_csv(behav_summary)
@@ -288,7 +289,7 @@ def process_sub(sub_id, main_dir=None, behav_data=None, mem_data=None, save_file
         behav_data.to_csv(behav_summary)
     
     #Retrieval
-    mem_summary = join(main_dir, 'behav_data', 'results', 'EmCon_Memory_summary.csv')
+    mem_summary = join(main_dir, 'stats', 'behavioral', 'EmCon_Memory_summary.csv')
     if mem_data is None:
         if os.path.exists(mem_summary):
             mem_data = pd.read_csv(mem_summary)
@@ -309,7 +310,7 @@ def process_all(main_dir=None):
     if main_dir is None:
         main_dir = os.getcwd()
         
-    behav_dir = join(main_dir, 'behav_data')
+    behav_dir = join(main_dir, 'psychopy')
     
     #Find all subjects
     sub_ids = list(set(file[:8] for file in os.listdir(behav_dir) if file.endswith('.csv')))

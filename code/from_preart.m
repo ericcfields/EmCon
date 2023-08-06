@@ -7,7 +7,7 @@
 % 3. Open artifact rejection script
 %
 %Author: Eric Fields
-%Version Date: 2 August 2023
+%Version Date: 5 August 2023
 
 clearvars; close all; clc;
 
@@ -17,16 +17,17 @@ clearvars; close all; clc;
 main_dir = EmCon_main_dir();
 
 %Default artifact rejection script
-default_arf = fullfile(main_dir, 'arf', 'EmCon_default_arf.m');
+default_arf = fullfile(main_dir, 'code', 'arf', 'EmCon_default_arf.m');
 
 %Batch processing
 % subject_ids = get_subset('postart', [], main_dir);
 
+
 %% Set-up
 
 cd(main_dir);
-addpath(fullfile(main_dir, 'arf'));
 addpath(fullfile(main_dir, 'code'));
+addpath(fullfile(main_dir, 'code', 'arf'));
 
 %If subject_ids variable is not defined above, prompt user
 if ~exist('subject_ids', 'var') || isempty(subject_ids)
@@ -89,7 +90,7 @@ for i = 1:length(sub_ids)
     end
 
     %Open or run arf script
-    sub_arf = fullfile(main_dir, 'arf', sprintf('arf_%s.m', sub_id));
+    sub_arf = fullfile(main_dir, 'code', 'arf', sprintf('arf_%s.m', sub_id));
     if ~exist(sub_arf, 'file')
         fprintf('\nSubject arf script doesn''t exist, so I will create one.\n\n');
         copyfile(default_arf, sub_arf);

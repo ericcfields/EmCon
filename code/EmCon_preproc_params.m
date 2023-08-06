@@ -1,7 +1,7 @@
 %Processing parameters for EmCon
 %
 %Author: Eric Fields
-%Version Date: 1 August 2023
+%Version Date: 5 August 2023
 
 %Get main data directory
 main_dir = EmCon_main_dir();
@@ -10,7 +10,7 @@ main_dir = EmCon_main_dir();
 % chanlocs_file = fullfile(fileparts(which('eeglab.m')), 'plugins/dipfit5.1/standard_BESA/standard-10-5-cap385.elp');
 
 %Bin descriptor file
-bin_desc_file = fullfile(main_dir, 'EmCon_bin_desc.txt');
+bin_desc_file = fullfile(main_dir, 'code', 'EmCon_bin_desc.txt');
 
 %Code used to denote boundary events
 boundary_code = 'boundary';

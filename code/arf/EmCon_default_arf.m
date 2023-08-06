@@ -1,6 +1,6 @@
 %Artifact rejection script for EmCon
 %AUTHOR: Eric Fields
-%VERSION DATE: 2 August 2023
+%VERSION DATE: 5 August 2023
 
 %%% ICA correction %%%
 
@@ -96,7 +96,7 @@ manual_unreject = false;
 %% ***** SET-UP *****
 
 %Set some variables if not previously set
-if ~exist('main_dir','var')
+if ~exist('main_dir', 'var')
     arffile_path = mfilename('fullpath');
     if strfind(arffile_path, [filesep 'arf' filesep]) %#ok<STRIFCND>
         main_dir = arffile_path(1:strfind(arffile_path, [filesep 'arf' filesep]));
@@ -118,7 +118,7 @@ end
 %Set paths
 cd(main_dir);
 addpath('code');
-addpath('arf');
+addpath(fullfile('code', 'arf'));
 
 %Import parameters
 EmCon_preproc_params;
@@ -127,6 +127,7 @@ EmCon_preproc_params;
 num_chans = length(EEG.chanlocs);
 EEGchans = 1:(num_chans-2);
 art_chan_low_pass = 15;
+
 
 %% ***** ARTIFACT DETECTION *****
 
@@ -148,7 +149,7 @@ EEG = pop_eegchanoperator(EEG, {blink_syntax}, 'ErrorMsg', 'popup', 'Warning', '
 EEG = pop_basicfilter(EEG, blink_chan, 'Cutoff',  art_chan_low_pass, 'Design', 'butter', 'Filter', 'lowpass', 'Order',  2);
 [ALLEEG, EEG, CURRENTSET] = eeg_store(ALLEEG, EEG, CURRENTSET);
 
-% %Check that data is epoch mean baselined
+%Check that data is epoch mean baselined
 assert(abs(mean(EEG.data(:))) < 0.1);
 
 %Remove ICs
@@ -274,7 +275,7 @@ if save_rej
     %Save to disk
     EEG = pop_saveset(EEG, 'filename', [sub_id '_postart.set'], 'filepath', fullfile(main_dir, 'EEGsets'));
     [ALLEEG, EEG] = eeg_store(ALLEEG, EEG, CURRENTSET);
-    EEG = pop_summary_AR_eeg_detection(EEG,fullfile(main_dir, 'arf', ['AR_summary_' sub_id '.txt']));
+    EEG = pop_summary_AR_eeg_detection(EEG,fullfile(main_dir, 'belist', [sub_id '_AR_summary' '.txt']));
     %Compute ERPs if requested
     if ~exist('compute_erps', 'var')
         user_resp = input('Compute ERPs?(y/n): ','s');
@@ -285,7 +286,7 @@ if save_rej
         end
     end 
     if compute_erps
-        EmCom_make_erp;
+        EmCon_make_erp;
     end
 else
     %If user chooses not to save, delete ar EEGsets and return to preart set

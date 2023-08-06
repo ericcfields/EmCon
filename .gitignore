@@ -21,16 +21,14 @@
 *.pdf
 
 ### Folders to completely ignore ###
-behav_data/*
 belist/*
 curry/*
 EEGsets/*
 ERPsets/*
+psychopy*
 *__pycache__*
 code/old/*
-stats/old/*
-stats/results/*
-ICA/*
 
 ### File subsets in folder to ignore ###
-arf/*.txt
+stats/behavioral/*.csv
+stats/behavioral/*.xlsx

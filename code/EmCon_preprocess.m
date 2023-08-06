@@ -30,9 +30,6 @@ EmCon_preproc_params;
 %Paths
 cd(main_dir)
 addpath(fullfile(main_dir, 'code'));
-try %#ok<TRYNC>
-    py_addpath(fullfile(main_dir, 'code'));
-end
 
 %If subject_ids variable is not defined above, prompt user
 if ~exist('subject_ids', 'var') || isempty(subject_ids)
@@ -70,9 +67,6 @@ else
 end
 
 %Create folder structure if it doesn't exist
-if ~exist(fullfile(main_dir, 'arf'), 'dir')
-    mkdir(fullfile(main_dir, 'arf'));
-end
 if ~exist(fullfile(main_dir, 'belist'), 'dir')
     mkdir(fullfile(main_dir, 'belist'));
 end
@@ -86,6 +80,7 @@ if ~exist(fullfile(main_dir, 'ICA'), 'dir')
     mkdir(fullfile(main_dir, 'ICA'));
 end
 
+
 %% ***** DATA PROCESSING *****
 
 %Loop through subjects and run all pre-processing steps
@@ -93,16 +88,19 @@ for i = 1:length(sub_ids)
     
     sub_id = sub_ids{i};
 
-    %Process behavioral data
-    try
-        py.EmCon_behav.process_sub(sub_id, main_dir);
-    catch
-        warning(fprintf('Couldn''t process behavioral data for %s', sub_id));
-    end
-    
     %start EEGLAB
     [ALLEEG, EEG, CURRENTSET, ALLCOM] = eeglab; %#ok<ASGLU>
     
+
+    %% Process behavioral data
+
+    try
+        EmCon_behav(sub_id);
+    catch
+        warning('Couldn''t process behavioral data for %s', sub_id);
+    end
+    
+
     %% Import EEG and channel locations
 
     %Import data or load existing raw set
