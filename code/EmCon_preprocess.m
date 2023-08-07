@@ -45,7 +45,11 @@ addpath(fullfile(main_dir, 'code'));
 
 %If subject_ids variable is not defined above, prompt user
 if ~exist('subject_ids', 'var') || isempty(subject_ids)
-    subject_ids = input('\n\nSubject ID:  ', 's');
+    if exist('sub_id', 'var')
+        subject_ids = {sub_id};
+    else
+        subject_ids = input('\n\nSubject ID:  ', 's');
+    end
 end
 
 %Parse subject ID input
@@ -233,6 +237,9 @@ for i = 1:length(sub_ids)
                                   'Eventlist', fullfile(main_dir, 'belist', [sub_id '_eventlist.txt'])); 
     [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, CURRENTSET, 'setname', [EEG.setname '_elist'], 'gui', 'off');
 
+    %Add memory flags to EEG.EVENTLIST
+    EEG = EmCon_add_mem_flags(EEG, main_dir);
+    
     %Assign events to bins
     EEG  = pop_binlister(EEG, 'BDF', bin_desc_file, 'ExportEL', fullfile(main_dir, 'belist', [sub_id '_binlist.txt']), ...
                          'IndexEL', 1, 'SendEL2', 'EEG&Text', 'Voutput', 'EEG');

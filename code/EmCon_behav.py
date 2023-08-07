@@ -61,7 +61,7 @@ def SDT(hits, misses, fas, crs):
     #Calculate parametric measures: d', beta, c and Az
     out = {}
     out['dprime']    = sps.norm.ppf(hit_rate) - sps.norm.ppf(fa_rate) #d'
-    out['Az']   = sps.norm.cdf(out['d'] / np.sqrt(2)) #AUC estimated from d'
+    out['Az']   = sps.norm.cdf(out['dprime'] / np.sqrt(2)) #AUC estimated from d'
     out['beta'] = np.exp((sps.norm.ppf(fa_rate)**2 - sps.norm.ppf(hit_rate)**2) / 2) #β
     out['c']    = -(sps.norm.ppf(hit_rate) + sps.norm.ppf(fa_rate)) / 2 #criterion
     

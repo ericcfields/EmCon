@@ -1,14 +1,250 @@
 #Bin descriptor for EmCon
-#Version Date: 1 August 2023
+#Version Date: 7 August 2023
+
+
+####################### MEMORY-INDEPENDENT BINS #######################
 
 bin 1
     neutral
-    .{201;202}{230;231}
+    .{201;202}
 
 bin 2
     negative
-    .{211;212}{230;231}
+    .{211;212}
 
 bin 3
     animal
-    .{220}{230;231}
+    .{220}
+	
+bin 4
+    all_standards
+    .{201;202;211;212}
+
+##### Correct answer bins #####
+
+bin 5
+    neutral_corr
+    .{201;202}{230;231}{236}
+
+bin 6
+    negative_corr
+    .{211;212}{230;231}{236}
+
+bin 7
+    animal_corr
+    .{220}{230;231}{235}
+
+
+
+####################### MEMORY BINS #######################
+
+#Flag 1 - Indicates whether memory flags are present
+#Flag 2 - Immediate old/new (new=0, old=1)
+#Flag 3 - Immediate remember/know (know=0, remember=1)
+#Flag 4 - Delayed old/new (new=0, old=1)
+#Flag 5 - Delayed remember/know (know=0, remember=1)
+#(flag go from right to left in the syntax below;
+#i.e., the rightmost number is flag 1)
+
+### Immediate Memory Test Bins ###
+
+bin 8
+	NEU_New_immediate
+	.{201;202:fb<000001>}
+	
+bin 9
+	NEU_Old_immediate
+	.{201;202:fb<000x11>}
+	
+bin 10
+	NEU_K_immediate
+	.{201;202:fb<000011>}
+
+bin 11
+	NEU_R_immediate
+	.{201;202:fb<000111>}
+
+bin 12
+	NEG_New_immediate
+	.{211;212:fb<000001>}
+	
+bin 13
+	NEG_Old_immediate
+	.{211;212:fb<000x11>}
+	
+bin 14
+	NEG_K_immediate
+	.{211;212:fb<000011>}
+
+bin 15
+	NEG_R_immediate
+	.{211;212:fb<000111>}
+
+bin 16
+	animal_New_immediate
+	.{220:fb<000001>}
+	
+bin 17
+	animal_Old_immediate
+	.{220:fb<000x11>}
+	
+bin 18
+	animal_K_immediate
+	.{220:fb<000011>}
+
+bin 19
+	animal_R_immediate
+	.{220:fb<000111>}
+	
+### Delayed Memory Test Bins ###
+
+bin 20
+	NEU_New_delayed
+	.{201;202:fb<001000>}
+	
+bin 21
+	NEU_Old_delayed
+	.{201;202:fb<x11000>}
+	
+bin 22
+	NEU_K_delayed
+	.{201;202:fb<011000>}
+
+bin 23
+	NEU_R_delayed
+	.{201;202:fb<111000>}
+
+bin 24
+	NEG_New_delayed
+	.{211;212:fb<001000>}
+	
+bin 25
+	NEG_Old_delayed
+	.{211;212:fb<x11000>}
+	
+bin 26
+	NEG_K_delayed
+	.{211;212:fb<011000>}
+
+bin 27
+	NEG_R_delayed
+	.{211;212:fb<111000>}
+
+bin 28
+	animal_New_delayed
+	.{220:fb<001000>}
+	
+bin 29
+	animal_Old_delayed
+	.{220:fb<x11000>}
+	
+bin 30
+	animal_K_delayed
+	.{220:fb<011000>}
+
+bin 31
+	animal_R_delayed
+	.{220:fb<111000>}
+
+
+##### Correct Response Memory Bins #####
+
+### Immediate Memory Test Bins ###
+
+bin 32
+	NEU_New_immediate_corr
+	.{201;202:fb<000001>}{230;231}{236}
+	
+bin 33
+	NEU_Old_immediate_corr
+	.{201;202:fb<000x11>}{230;231}{236}
+	
+bin 34
+	NEU_K_immediate_corr
+	.{201;202:fb<000011>}{230;231}{236}
+
+bin 35
+	NEU_R_immediate_corr
+	.{201;202:fb<000111>}{230;231}{236}
+
+bin 36
+	NEG_New_immediate_corr
+	.{211;212:fb<000001>}{230;231}{236}
+	
+bin 37
+	NEG_Old_immediate_corr
+	.{211;212:fb<000x11>}{230;231}{236}
+	
+bin 38
+	NEG_K_immediate_corr
+	.{211;212:fb<000011>}{230;231}{236}
+
+bin 39
+	NEG_R_immediate_corr
+	.{211;212:fb<000111>}{230;231}{236}
+
+bin 40
+	animal_New_immediate_corr
+	.{220:fb<000001>}{230;231}{235}
+	
+bin 41
+	animal_Old_immediate_corr
+	.{220:fb<000x11>}{230;231}{235}
+	
+bin 42
+	animal_K_immediate_corr
+	.{220:fb<000011>}{230;231}{235}
+
+bin 43
+	animal_R_immediate_corr
+	.{220:fb<000111>}{230;231}{235}
+	
+### Delayed Memory Test Bins ###
+
+bin 44
+	NEU_New_delayed_corr
+	.{201;202:fb<001000>}{230;231}{236}
+	
+bin 45
+	NEU_Old_delayed_corr
+	.{201;202:fb<x11000>}{230;231}{236}
+	
+bin 46
+	NEU_K_delayed_corr
+	.{201;202:fb<011000>}{230;231}{236}
+
+bin 47
+	NEU_R_delayed_corr
+	.{201;202:fb<111000>}{230;231}{236}
+
+bin 48
+	NEG_New_delayed_corr
+	.{211;212:fb<001000>}{230;231}{236}
+	
+bin 49
+	NEG_Old_delayed_corr
+	.{211;212:fb<x11000>}{230;231}{236}
+	
+bin 50
+	NEG_K_delayed_corr
+	.{211;212:fb<011000>}{230;231}{236}
+
+bin 51
+	NEG_R_delayed_corr
+	.{211;212:fb<111000>}{230;231}{236}
+
+bin 52
+	animal_New_delayed_corr
+	.{220:fb<001000>}{230;231}{235}
+	
+bin 53
+	animal_Old_delayed_corr
+	.{220:fb<x11000>}{230;231}{235}
+	
+bin 54
+	animal_K_delayed_corr
+	.{220:fb<011000>}{230;231}{235}
+
+bin 55
+	animal_R_delayed_corr
+	.{220:fb<111000>}{230;231}{235}
