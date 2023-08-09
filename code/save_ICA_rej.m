@@ -5,7 +5,7 @@
 %script can use later
 %
 %Author: Eric Fields
-%Version Date: 6 August 2023
+%Version Date: 9 August 2023
 
 %Copyright (c) 2023, Eric Fields
 %All rights reserved.
@@ -33,7 +33,7 @@ exc_chan_idx = listdlg('ListString', {EEG.chanlocs.labels}, ...
 if isempty(exc_chan_idx)
     exc_chan_idx = 0;
 end
-writematrx(exc_chan_idx', fullfile(main_dir, 'ICA', [sub_id '_exclude_chans.csv']));
+writematrix(exc_chan_idx', fullfile(main_dir, 'ICA', [sub_id '_exclude_chans.csv']));
 
 %Report percent bad
 fprintf('\n%.2f%% of epochs rejected\n\n', mean(bad_epochs)*100);

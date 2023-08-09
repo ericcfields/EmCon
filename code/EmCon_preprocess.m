@@ -1,7 +1,7 @@
 %Preprocessing script for EmCon
 %
 %AUTHOR: Eric Fields
-%VERSION DATE: 6 August 2023
+%VERSION DATE: 9 August 2023
 
 %Copyright (c) 2023, Eric Fields
 %All rights reserved.
@@ -187,10 +187,10 @@ for i = 1:length(sub_ids)
     
     %Find numbers of reference channels
     ref_chans = find(ismember({EEG.chanlocs.labels}, ref_chans));
+    excl_re_ref = find(ismember({EEG.chanlocs.labels}, excl_re_ref));
 
     %Re-reference
-    EEG = eeg_checkset(EEG);
-    EEG = pop_reref(EEG, ref_chans);
+    EEG = pop_reref(EEG, ref_chans,'exclude', excl_re_ref);
     [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, CURRENTSET, 'setname', [EEG.setname '_ref'], 'gui', 'off');
     
     

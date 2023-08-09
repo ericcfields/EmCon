@@ -6,7 +6,7 @@
 %postart EEGset, and creates ERPs from this set.
 %
 %Author: Eric Fields
-%Version Date: 6 August 2023
+%Version Date: 9 August 2023
 
 %Copyright (c) 2023, Eric Fields
 %All rights reserved.
@@ -18,7 +18,7 @@
 %% Paremeters and Set-up
 
 %Half-amplitude cutoff of filter for viewing ERP data
-lp_cutoff = 15;
+lp_cutoff = 20;
 
 %Get main data directory
 if ~exist('main_dir', 'var')
@@ -64,7 +64,7 @@ else
 end
 
 %Add bins
-%TO DO
+%[ALLERP, ERP, CURRENTERP] = EmCon_add_bins(ALLERP, ERP, CURRENTERP);
 
 %Save ERP
 if batch_proc
@@ -121,5 +121,20 @@ if ~batch_proc
 
     eeglab redraw;
     erplab redraw;
+
+end
+
+function [ALLERP, ERP, CURRENTERP] = EmCon_add_bins(ALLERP, ERP, CURRENTERP)
+
+    %Add main effect waves
+    %TO DO
+    
+    %Add difference waves
+    %TO DO: Add all difference waves of interest
+    ERP = pop_binoperator(ERP, {'b56 = b2 - b1 label diff_NEG-NEU', ...
+                                'b57 = b3 - b1 label diff_animal-NEU'});
+
+    %Update ALLERP
+    ALLERP(CURRENTERP) = ERP;
 
 end

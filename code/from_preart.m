@@ -5,7 +5,7 @@
 % 3. Open artifact rejection script
 %
 %Author: Eric Fields
-%Version Date: 6 August 2023
+%Version Date: 8 August 2023
 
 %Copyright (c) 2023, Eric Fields
 %All rights reserved.
@@ -71,6 +71,7 @@ else
     batch_proc = false;
 end
 
+
 %% Run
 
 for i = 1:length(sub_ids)
@@ -95,13 +96,13 @@ for i = 1:length(sub_ids)
 
     %Open or run arf script
     sub_arf = fullfile(main_dir, 'code', 'arf', sprintf('arf_%s.m', sub_id));
-    if ~exist(sub_arf, 'file')
-        fprintf('\nSubject arf script doesn''t exist, so I will create one.\n\n');
-        copyfile(default_arf, sub_arf);
-    end
     if batch_proc
         run(sub_arf)
     else
+        if ~exist(sub_arf, 'file')
+            fprintf('\nSubject arf script doesn''t exist, so I will create one.\n\n');
+            copyfile(default_arf, sub_arf);
+        end
         edit(sub_arf);
     end
     

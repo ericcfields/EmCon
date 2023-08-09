@@ -1,7 +1,7 @@
 %Processing parameters for EmCon
 %
 %Author: Eric Fields
-%Version Date: 6 August 2023
+%Version Date: 9 August 2023
 
 %Copyright (c) 2023, Eric Fields
 %All rights reserved.
@@ -25,6 +25,7 @@ resample_rate = false;
 
 %Reference electrodes
 ref_chans = {'M1', 'M2'};
+excl_re_ref = {'VEOG', 'HEOG'}; %bipolar channels
 
 %Event code shift
 %(set to false if no shift is needed)
