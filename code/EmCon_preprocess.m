@@ -238,7 +238,11 @@ for i = 1:length(sub_ids)
     [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, CURRENTSET, 'setname', [EEG.setname '_elist'], 'gui', 'off');
 
     %Add memory flags to EEG.EVENTLIST
-    EEG = EmCon_add_mem_flags(EEG, main_dir);
+    try
+        EEG = EmCon_add_mem_flags(EEG, main_dir);
+    catch
+        warning('There was a problem adding the memory flags.');
+    end
     
     %Assign events to bins
     EEG  = pop_binlister(EEG, 'BDF', bin_desc_file, 'ExportEL', fullfile(main_dir, 'belist', [sub_id '_binlist.txt']), ...
