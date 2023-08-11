@@ -1,7 +1,6 @@
 #Bin descriptor for EmCon
 #Version Date: 7 August 2023
 
-
 ####################### MEMORY-INDEPENDENT BINS #######################
 
 bin 1
@@ -95,156 +94,220 @@ bin 18
 bin 19
 	animal_R_immediate
 	.{220:fb<000111>}
+
+bin 20
+	both_New_immediate
+	.{201;202;211;212:fb<000001>}
+	
+bin 21
+	both_Old_immediate
+	.{201;202;211;212:fb<000x11>}
+	
+bin 22
+	both_K_immediate
+	.{201;202;211;212:fb<000011>}
+
+bin 23
+	both_R_immediate
+	.{201;202;211;212:fb<000111>}
 	
 ### Delayed Memory Test Bins ###
 
-bin 20
+bin 24
 	NEU_New_delayed
 	.{201;202:fb<001000>}
 	
-bin 21
+bin 25
 	NEU_Old_delayed
 	.{201;202:fb<x11000>}
 	
-bin 22
+bin 26
 	NEU_K_delayed
 	.{201;202:fb<011000>}
 
-bin 23
+bin 27
 	NEU_R_delayed
 	.{201;202:fb<111000>}
 
-bin 24
+bin 28
 	NEG_New_delayed
 	.{211;212:fb<001000>}
 	
-bin 25
+bin 29
 	NEG_Old_delayed
 	.{211;212:fb<x11000>}
 	
-bin 26
+bin 30
 	NEG_K_delayed
 	.{211;212:fb<011000>}
 
-bin 27
+bin 31
 	NEG_R_delayed
 	.{211;212:fb<111000>}
 
-bin 28
+bin 32
 	animal_New_delayed
 	.{220:fb<001000>}
 	
-bin 29
+bin 33
 	animal_Old_delayed
 	.{220:fb<x11000>}
 	
-bin 30
+bin 34
 	animal_K_delayed
 	.{220:fb<011000>}
 
-bin 31
+bin 35
 	animal_R_delayed
 	.{220:fb<111000>}
+
+bin 36
+	both_New_delayed
+	.{201;202;211;212:fb<001000>}
+	
+bin 37
+	both_Old_delayed
+	.{201;202;211;212:fb<x11000>}
+	
+bin 38
+	both_K_delayed
+	.{201;202;211;212:fb<011000>}
+
+bin 39
+	both_R_delayed
+	.{201;202;211;212:fb<111000>}
 
 
 ##### Correct Response Memory Bins #####
 
 ### Immediate Memory Test Bins ###
 
-bin 32
+bin 40
 	NEU_New_immediate_corr
 	.{201;202:fb<000001>}{230;231}{236}
 	
-bin 33
+bin 41
 	NEU_Old_immediate_corr
 	.{201;202:fb<000x11>}{230;231}{236}
 	
-bin 34
+bin 42
 	NEU_K_immediate_corr
 	.{201;202:fb<000011>}{230;231}{236}
 
-bin 35
+bin 43
 	NEU_R_immediate_corr
 	.{201;202:fb<000111>}{230;231}{236}
 
-bin 36
+bin 44
 	NEG_New_immediate_corr
 	.{211;212:fb<000001>}{230;231}{236}
 	
-bin 37
+bin 45
 	NEG_Old_immediate_corr
 	.{211;212:fb<000x11>}{230;231}{236}
 	
-bin 38
+bin 46
 	NEG_K_immediate_corr
 	.{211;212:fb<000011>}{230;231}{236}
 
-bin 39
+bin 47
 	NEG_R_immediate_corr
 	.{211;212:fb<000111>}{230;231}{236}
 
-bin 40
+bin 48
 	animal_New_immediate_corr
 	.{220:fb<000001>}{230;231}{235}
 	
-bin 41
+bin 49
 	animal_Old_immediate_corr
 	.{220:fb<000x11>}{230;231}{235}
 	
-bin 42
+bin 50
 	animal_K_immediate_corr
 	.{220:fb<000011>}{230;231}{235}
 
-bin 43
+bin 51
 	animal_R_immediate_corr
 	.{220:fb<000111>}{230;231}{235}
+
+bin 52
+	both_New_immediate_corr
+	.{201;202;211;212:fb<000001>}{230;231}{236}
+	
+bin 53
+	both_Old_immediate_corr
+	.{201;202;211;212:fb<000x11>}{230;231}{236}
+	
+bin 54
+	both_K_immediate_corr
+	.{201;202;211;212:fb<000011>}{230;231}{236}
+
+bin 55
+	both_R_immediate_corr
+	.{201;202;211;212:fb<000111>}{230;231}{236}
 	
 ### Delayed Memory Test Bins ###
 
-bin 44
+bin 56
 	NEU_New_delayed_corr
 	.{201;202:fb<001000>}{230;231}{236}
 	
-bin 45
+bin 57
 	NEU_Old_delayed_corr
 	.{201;202:fb<x11000>}{230;231}{236}
 	
-bin 46
+bin 58
 	NEU_K_delayed_corr
 	.{201;202:fb<011000>}{230;231}{236}
 
-bin 47
+bin 59
 	NEU_R_delayed_corr
 	.{201;202:fb<111000>}{230;231}{236}
 
-bin 48
+bin 60
 	NEG_New_delayed_corr
 	.{211;212:fb<001000>}{230;231}{236}
 	
-bin 49
+bin 61
 	NEG_Old_delayed_corr
 	.{211;212:fb<x11000>}{230;231}{236}
 	
-bin 50
+bin 62
 	NEG_K_delayed_corr
 	.{211;212:fb<011000>}{230;231}{236}
 
-bin 51
+bin 63
 	NEG_R_delayed_corr
 	.{211;212:fb<111000>}{230;231}{236}
 
-bin 52
+bin 64
 	animal_New_delayed_corr
 	.{220:fb<001000>}{230;231}{235}
 	
-bin 53
+bin 65
 	animal_Old_delayed_corr
 	.{220:fb<x11000>}{230;231}{235}
 	
-bin 54
+bin 66
 	animal_K_delayed_corr
 	.{220:fb<011000>}{230;231}{235}
 
-bin 55
+bin 67
 	animal_R_delayed_corr
 	.{220:fb<111000>}{230;231}{235}
+
+bin 68
+	both_New_delayed_corr
+	.{201;202;211;212:fb<001000>}{230;231}{236}
+	
+bin 69
+	both_Old_delayed_corr
+	.{201;202;211;212:fb<x11000>}{230;231}{236}
+	
+bin 70
+	both_K_delayed_corr
+	.{201;202;211;212:fb<011000>}{230;231}{236}
+
+bin 71
+	both_R_delayed_corr
+	.{201;202;211;212:fb<111000>}{230;231}{236}
