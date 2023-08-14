@@ -1,7 +1,7 @@
 %Processing parameters for EmCon
 %
 %Author: Eric Fields
-%Version Date: 9 August 2023
+%Version Date: 13 August 2023
 
 %Copyright (c) 2023, Eric Fields
 %All rights reserved.
@@ -36,8 +36,8 @@ boundary_code = 'boundary';
 
 %Minimum gap size (in ms) for deleting gaps/breaks and buffer to leave on each side
 %set gap_thresh = false to leave all data
-gap_thresh = 20e3;
-gap_buffer = 10e3;
+gap_thresh = 30e3;
+gap_buffer = 20e3;
 
 %Filtering for continuous data
 %High-pass filters should be applied here; low pass filters can be applied later
