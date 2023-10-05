@@ -2,13 +2,13 @@
 
 **Summary**
 
-This study is designed to examine the relationship between the LPP of the ERP and subsequent memory at varying delays. EEG is recorded are presented with a list of 200 neutral words, 200 negative words, and 40 animal words with a task of pressing a button to indicate whether the word is an animal word. After a short delay, half the presented stimuli along with new neutral, negative, and animal words are presented and participants compete a remember/know/new memory test. The other half of the stimuli are tested in a memory test the next day.
+This study is designed to examine the relationship between the LPP of the ERP and subsequent memory at varying delays. EEG is recorded as participants are presented with a list of 200 neutral words, 200 negative words, and 40 animal words. The task is to press a button to indicate whether the word is an animal word. After a short delay, half the presented stimuli along with new neutral, negative, and animal words are presented and participants compete a remember/know/new memory test. The other half of the stimuli are tested in a memory test the next day.
 
 **Contact Information**
 
 Eric Fields (fieldsec@westminster.edu)  
 Westminster College  
-6 August 2023
+5 October 2023
 
 **License**
 
