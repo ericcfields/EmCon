@@ -1,14 +1,16 @@
 # EmCon
 
+Last updated: 7 October 2023
+
 **Summary**
 
-This study is designed to examine the relationship between the LPP of the ERP and subsequent memory at varying delays. EEG is recorded as participants are presented with a list of 200 neutral words, 200 negative words, and 40 animal words. The task is to press a button to indicate whether the word is an animal word. After a short delay, half the presented stimuli along with new neutral, negative, and animal words are presented and participants compete a remember/know/new memory test. The other half of the stimuli are tested in a memory test the next day.
+This study is designed to examine the relationship between the LPP of the ERP and subsequent memory at varying delays. EEG is recorded as participants are presented with a list of 200 neutral words, 200 negative words, and 40 animal words. The task is to press a button to indicate whether the word is an animal word. After a short delay, half the presented stimuli along with new neutral, negative, and animal words are presented and participants compete a remember/know/new memory test. The other half of the stimuli are tested in a memory test the next day. 
 
 **Contact Information**
 
-Eric Fields (fieldsec@westminster.edu)  
+Eric Fields  
+fieldsec@westminster.edu  
 Westminster College  
-5 October 2023
 
 **License**
 
@@ -17,6 +19,9 @@ All rights reserved.
 This code is free and open source software made available under the terms of the 3-clause BSD license:  
 https://opensource.org/licenses/BSD-3-Clause
 
+**Software Versions**
+
+Code was developed and tested in MATLAB 2023a, EEGLAB 2023.1, ERPLAB 10.0, Python 3.11, and pandas 1.5.3.
 
 
 ## Folder structure and data
@@ -48,7 +53,7 @@ https://opensource.org/licenses/BSD-3-Clause
 
 **II. ICA Decomposition**
 
-2. Run `pre_ICA_rej`. A window will pop up. Scroll through the data and click to highlight each epoch that should be excluded from the ICA training set (these will not be permanently deleted from the data). The goal is to exlclude epochs with artifact that is not from a regular, consistent source such as EMG, EOG, or EEG. For example, trials with random drift or jump on particular electrodes (e.g., as a result of the participant moving) should be excluded. Don't be afraid to be aggressive here to get the best ICA solution. When finished, click "Update Marks" at the bottom right of the window.
+2. Run `pre_ICA_rej`. A window will pop up. Scroll through the data and click to highlight each epoch that should be excluded from the ICA training set (these will not be permanently deleted from the data). The goal is to exclude epochs with artifact that is not from a regular, consistent source such as EMG, EOG, or EEG. For example, trials with random drift or jump on particular electrodes (e.g., as a result of the participant moving) should be excluded. Don't be afraid to be aggressive here to get the best ICA solution. When finished, click "Update Marks" at the bottom right of the window.
 
 3. Run `save_ICA_rej` immediately after marking trials for exclusion for ICA. This will save the selections you made. It will also ask you if you want to exclude any electrodes from ICA training. You should only do this for electrodes you plan to interpolate later.
 
@@ -66,7 +71,7 @@ https://opensource.org/licenses/BSD-3-Clause
 
 9. When the confirmation dialogue comes up, click "Plot single trials" and scroll through the data to check whether the ICA correction is accurately removing the intended artifact and only the intended artifact. Then click "Accept".
 
-10. When the script finishes there will be a summary of artifact detection in the command window which describes rejected trials per channel and per detection algorithm. Two windows will pop up, one showing the data and the other a table showing artifact rejection values for each channel for each rejection algorithm. This table represents teh trial the mouse is currently hovering over. Scroll through the data and determine if artifact detection is adequately separating trials that should and should not be rejected. If not, try to determine what changes to algorithm thresholds or other parameters could improve artifact detection. At the command prompt, type 'y' if you are satisfied with artifact correction and rejection and want to save and proceed. Type 'n' if you would like to make some changes to the artifact rejection script and run again. Continue this process until you are satisfied. *NOTE: If for any reason an error is generated and the artifact rejection script does not finish running correctly, you need to restart the process by re-running `from_preart`. This will ensure you are working with the preart set, not a set with partial artifact correction/rejection (running the artifact rejection script again on such a set will cause problems).*
+10. When the script finishes there will be a summary of artifact detection in the command window which describes rejected trials per channel and per detection algorithm. Two windows will pop up, one showing the data and the other a table showing artifact rejection values for each channel for each rejection algorithm. This table represents the trial the mouse is currently hovering over. Scroll through the data and determine if artifact detection is adequately separating trials that should and should not be rejected. If not, try to determine what changes to algorithm thresholds or other parameters could improve artifact detection. At the command prompt, type 'y' if you are satisfied with artifact correction and rejection and want to save and proceed. Type 'n' if you would like to make some changes to the artifact rejection script and run again. Continue this process until you are satisfied. *NOTE: If for any reason an error is generated and the artifact rejection script does not finish running correctly, you need to restart the process by re-running `from_preart`. This will ensure you are working with the preart set, not a set with partial artifact correction/rejection (running the artifact rejection script again on such a set will cause problems).*
 
 
 **IV. Averaging**
