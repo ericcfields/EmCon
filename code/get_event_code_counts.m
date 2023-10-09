@@ -42,7 +42,7 @@ function [ec_counts, all_events] = get_event_code_counts(EEG, output_file)
     %Check that only codes 1 - 255 exist
     all_event_codes = unique(all_events);
     if ~all(ismember(all_event_codes, 1:255))
-        error('get_event_code_counts assumes that only codes 1-255 are possible, but other event codes were found.');
+        warning('get_event_code_counts assumes that only codes 1-255 are possible, but other event codes were found.');
     end
     
     %Get counts for all possible event codes

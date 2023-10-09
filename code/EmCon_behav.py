@@ -3,7 +3,7 @@
 Process behvavioral data for EmCon
 
 Author: Eric Fields
-Version Date: 6 August 2023
+Version Date: 9 October 2023
 
 Copyright (c) 2023, Eric Fields
 All rights reserved.
@@ -92,7 +92,7 @@ def process_sub_behav_data(sub_id, main_dir=None, behav_data=None):
     
     #Find encoding psychopy file
     enc_file = [file for file in os.listdir(behav_dir) if 
-    			file.startswith('%s_EmCon_enc' % sub_id) and
+    			file.startswith('%s_enc' % sub_id) and
     			file.endswith('.csv')]
     assert len(enc_file) == 1
     enc_file = enc_file[0]
@@ -116,7 +116,7 @@ def process_sub_behav_data(sub_id, main_dir=None, behav_data=None):
 
     #Trial numbers
     for cond in ['NEU', 'NEG', 'animal']:
-        behav_data.loc[sub_id, cond+'_N'] = enc_data.loc[enc_data['condition'] == cond,
+        behav_data.loc[sub_id, cond+'_N'] = enc_data.loc[enc_data['valence'] == cond,
                                                               'gamepad_resp_keys'].count()
 
     #Accuracy
@@ -134,18 +134,18 @@ def process_sub_behav_data(sub_id, main_dir=None, behav_data=None):
             elif resp_hand == 'L':
                 corr_resp = 5
         #Calculate accuracy
-        behav_data.loc[sub_id, cond+'_acc'] = np.mean(enc_data.loc[enc_data['condition'] == cond,
+        behav_data.loc[sub_id, cond+'_acc'] = np.mean(enc_data.loc[enc_data['valence'] == cond,
                                                                    'gamepad_resp_keys'] == corr_resp)
 
     #Reaction time
     for cond in ['NEU', 'NEG', 'animal']:
-        behav_data.loc[sub_id, cond+'_meanRT'] = enc_data.loc[enc_data['condition'] == cond, 
+        behav_data.loc[sub_id, cond+'_meanRT'] = enc_data.loc[enc_data['valence'] == cond, 
                                                               'gamepad_resp_rt'].mean()
     for cond in ['NEU', 'NEG', 'animal']:
-        behav_data.loc[sub_id, cond+'_medianRT'] = enc_data.loc[enc_data['condition'] == cond, 
+        behav_data.loc[sub_id, cond+'_medianRT'] = enc_data.loc[enc_data['valence'] == cond, 
                                                                 'gamepad_resp_rt'].median()
     for cond in ['NEU', 'NEG', 'animal']:
-        behav_data.loc[sub_id, cond+'_tmeanRT'] = sps.trim_mean(enc_data.loc[enc_data['condition'] == cond, 
+        behav_data.loc[sub_id, cond+'_tmeanRT'] = sps.trim_mean(enc_data.loc[enc_data['valence'] == cond, 
                                                                             'gamepad_resp_rt'], 0.2)
     
     return behav_data
@@ -166,7 +166,7 @@ def process_sub_mem_data(sub_id, mem_data=None, main_dir=None):
     ##### Immediate retrieval #####
     #Find retrieval file
     ret1_file = [file for file in os.listdir(behav_dir) if 
-                 file.startswith('%s_EmCon_ret1' % sub_id) and
+                 file.startswith('%s_ret1' % sub_id) and
                  file.endswith('.csv')]
     assert len(ret1_file) == 1
     ret1_file = ret1_file[0]
@@ -178,7 +178,7 @@ def process_sub_mem_data(sub_id, mem_data=None, main_dir=None):
     ##### Delayed retrieval #####
     #Find retrieval file
     ret2_file = [file for file in os.listdir(behav_dir) if 
-                 file.startswith('%s_EmCon_ret2' % sub_id) and
+                 file.startswith('%s_ret2' % sub_id) and
                  file.endswith('.csv')]
     if ret2_file:
         assert len(ret2_file) == 1
@@ -230,7 +230,7 @@ def process_sub_mem_data(sub_id, mem_data=None, main_dir=None):
                 continue
         
             #Just the trials in the current condition
-            cond_idx = ret_data['condition'] == val_cond
+            cond_idx = ret_data['valence'] == val_cond
             
             #Calculate hits, misses, false alarms, and correct rejections
             hits = sum((ret_data.loc[cond_idx, 'mem_cond'] == 'Old') &
@@ -318,7 +318,10 @@ def process_all(main_dir=None):
     behav_dir = join(main_dir, 'psychopy')
     
     #Find all subjects
-    sub_ids = list(set(file[:8] for file in os.listdir(behav_dir) if file.endswith('.csv')))
+    sub_ids = list(set(file[:8] for file in os.listdir(behav_dir) 
+                       if file.endswith('.csv')
+                       if file[:2].isdigit()))
+    sub_ids.sort()
     
     #Start from scratch
     behav_data = None
