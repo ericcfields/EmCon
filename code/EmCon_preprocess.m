@@ -1,7 +1,7 @@
 %Preprocessing script for EmCon
 %
 %AUTHOR: Eric Fields
-%VERSION DATE: 9 August 2023
+%VERSION DATE: 13 October 2023
 
 %Copyright (c) 2023, Eric Fields
 %All rights reserved.
@@ -26,6 +26,8 @@
 
 %clear the workspace and close all figures/windows
 clearvars; close all;
+%make sure warnings are on
+warning 'on';
 
 
 %% ***** PARAMETERS *****
@@ -231,18 +233,19 @@ for i = 1:length(sub_ids)
     
     
     %% Bin and epoch
-
+    
     %Create event list
-    EEG  = pop_creabasiceventlist(EEG, 'AlphanumericCleaning', 'on', 'BoundaryNumeric', {-99}, 'BoundaryString', {'boundary'}, ... 
-                                  'Eventlist', fullfile(main_dir, 'belist', [sub_id '_eventlist.txt'])); 
-    [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, CURRENTSET, 'setname', [EEG.setname '_elist'], 'gui', 'off');
-
+    EEG  = pop_creabasiceventlist(EEG, 'AlphanumericCleaning', 'on', 'BoundaryNumeric', {-99}, 'BoundaryString', {'boundary'});
+    [ALLEEG, EEG] = eeg_store(ALLEEG, EEG, CURRENTSET);
     %Add memory flags to EEG.EVENTLIST
     try
         EEG = EmCon_add_mem_flags(EEG, main_dir);
+        
     catch
         warning('There was a problem adding the memory flags.');
     end
+    [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, CURRENTSET, 'setname', [EEG.setname '_elist'], 'gui', 'off');
+    EEG = pop_exporteegeventlist( EEG , 'Filename', fullfile(main_dir, 'belist', [sub_id '_eventlist.txt']));
     
     %Assign events to bins
     EEG  = pop_binlister(EEG, 'BDF', bin_desc_file, 'ExportEL', fullfile(main_dir, 'belist', [sub_id '_binlist.txt']), ...

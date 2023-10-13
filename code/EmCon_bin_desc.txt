@@ -1,5 +1,5 @@
 #Bin descriptor for EmCon
-#Version Date: 7 August 2023
+#Version Date: 13 October 2023
 
 ####################### MEMORY-INDEPENDENT BINS #######################
 
@@ -42,7 +42,7 @@ bin 7
 #Flag 3 - Immediate remember/know (know=0, remember=1)
 #Flag 4 - Delayed old/new (new=0, old=1)
 #Flag 5 - Delayed remember/know (know=0, remember=1)
-#(flag go from right to left in the syntax below;
+#(flags go from right to left in the syntax below;
 #i.e., the rightmost number is flag 1)
 
 ### Immediate Memory Test Bins ###

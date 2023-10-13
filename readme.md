@@ -1,6 +1,6 @@
 # EmCon
 
-Last updated: 7 October 2023
+Last updated: 13 October 2023
 
 **Summary**
 
@@ -21,7 +21,7 @@ https://opensource.org/licenses/BSD-3-Clause
 
 **Software Versions**
 
-Code was developed and tested in MATLAB 2023a, EEGLAB 2023.1, ERPLAB 10.0, Python 3.11, and pandas 1.5.3.
+Code was developed and tested in MATLAB 2023a, EEGLAB 2023.1, ERPLAB 10.01, Python 3.11, and pandas 1.5.3.
 
 
 ## Folder structure and data

@@ -87,7 +87,7 @@ ppa_chans = 1:num_chans;
 
 %Step-based drift detection
 %Flag 5
-drift_thresh     = 40;
+drift_thresh     = 45;
 drift_windowsize = 1000;
 drift_windowstep = 50;
 drift_chans = [1:26, 28];
