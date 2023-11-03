@@ -1,7 +1,7 @@
 %Preprocessing script for EmCon
 %
 %AUTHOR: Eric Fields
-%VERSION DATE: 13 October 2023
+%VERSION DATE: 3 November 2023
 
 %Copyright (c) 2023, Eric Fields
 %All rights reserved.
@@ -40,6 +40,8 @@ EmCon_preproc_params;
 
 
 %% ***** SET-UP *****
+
+warning('on');
 
 %Paths
 cd(main_dir)

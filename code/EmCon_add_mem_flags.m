@@ -1,7 +1,7 @@
 %Add user flags indicating subsequent memory for EmCon ERP
 %
 %Author: Eric Fields
-%Version Date: 13 October 2023
+%Version Date: 3 November 2023
 
 %Copyright (c) 2023, Eric Fields
 %All rights reserved.
@@ -31,6 +31,7 @@ function EEG = EmCon_add_mem_flags(EEG, main_dir)
     end
     
     %Import memory data
+    s = warning('query', 'MATLAB:table:ModifiedAndSavedVarnames');
     warning('off', 'MATLAB:table:ModifiedAndSavedVarnames');
     ret1_data = readtable(fullfile(main_dir, 'psychopy', ret1_file), 'VariableNamingRule', 'modify', 'TreatAsMissing', 'None');
     ret1_data = ret1_data(:, {'fix_ec', 'word_ec', 'mem_cond', 'test_cond', 'oldnew_resp_keys', 'rk_resp_keys'});
@@ -41,6 +42,7 @@ function EEG = EmCon_add_mem_flags(EEG, main_dir)
     else
         ret_data = ret1_data;
     end
+    warning(s.state, 'MATLAB:table:ModifiedAndSavedVarnames');
     
     %Find word events
     word_idx = find(ismember([EEG.EVENTLIST.eventinfo.code], [201, 202, 211, 212, 220]));

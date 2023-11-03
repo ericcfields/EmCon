@@ -241,14 +241,14 @@ def process_sub_mem_data(sub_id, mem_data=None, main_dir=None):
                      (ret_data.loc[cond_idx, 'oldnew_resp_keys'] == 5))
             CR = sum((ret_data.loc[cond_idx, 'mem_cond'] == 'New') &
                      (ret_data.loc[cond_idx, 'oldnew_resp_keys'] == 4))
-            K_hits = sum((ret_data.loc[cond_idx, 'mem_cond'] == 'Old')&
+            K_hits = sum((ret_data.loc[cond_idx, 'mem_cond'] == 'Old') &
                         (ret_data.loc[cond_idx, 'rk_resp_keys'] == '4'))
             R_hits = sum((ret_data.loc[cond_idx, 'mem_cond'] == 'Old')&
                         (ret_data.loc[cond_idx, 'rk_resp_keys'] == '5'))
             assert hits == K_hits + R_hits
-            K_FA = sum((ret_data.loc[cond_idx, 'mem_cond'] == 'New')&
+            K_FA = sum((ret_data.loc[cond_idx, 'mem_cond'] == 'New') &
                        (ret_data.loc[cond_idx, 'rk_resp_keys'] == '4'))
-            R_FA = sum((ret_data.loc[cond_idx, 'mem_cond'] == 'New')&
+            R_FA = sum((ret_data.loc[cond_idx, 'mem_cond'] == 'New') &
                        (ret_data.loc[cond_idx, 'rk_resp_keys'] == '5'))
             assert FA == K_FA + R_FA
             
