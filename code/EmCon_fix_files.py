@@ -3,7 +3,7 @@
 Fix psychopy file naming problems for EmCon
 
 Author: Eric Fields
-Version Date: 6 November 2023
+Version Date: 17 November 2023
 """
 
 import os
@@ -29,16 +29,22 @@ for file in os.listdir(join(behav_dir, 'orig')):
         new_file = join(behav_dir, file)
     
     #Copy file with corrected name
-    shutil.copy2(join(behav_dir, 'orig', file), new_file)
+    if not os.path.isfile(new_file):
+        shutil.copy2(join(behav_dir, 'orig', file), new_file)
     
 
-#%% Combine encoding for 06_EmCon
+#%% Combine encoding for 06_EmCon (split into two files due to error)
 
-pt1 = pd.read_csv(join(behav_dir, 'orig', '06_EmCon_enc_2023-10-30_15h36.09.271.csv'))
-pt1 = pt1[pt1['valence'].notna()]
-pt2 = pd.read_csv(join(behav_dir, 'orig', '06_EmCon_enc_2023-10-30_16h01.42.053.csv'))
-pt2 = pt2[pt2['valence'].notna()]
+merged_file_06 = join(behav_dir, '06_EmCon_enc_2023-10-30.csv')
 
-full_data = pd.concat((pt1, pt2), ignore_index=True)
+if not os.path.isfile(merged_file_06):
 
-full_data.to_csv(join(behav_dir, '06_EmCon_enc_2023-10-30.csv'), index=False)
+    #Get trial rows from the two parts
+    pt1 = pd.read_csv(join(behav_dir, 'orig', '06_EmCon_enc_2023-10-30_15h36.09.271.csv'))
+    pt1 = pt1[pt1['valence'].notna()]
+    pt2 = pd.read_csv(join(behav_dir, 'orig', '06_EmCon_enc_2023-10-30_16h01.42.053.csv'))
+    pt2 = pt2[pt2['valence'].notna()]
+    
+    full_data = pd.concat((pt1, pt2), ignore_index=True)
+    
+    full_data.to_csv(merged_file_06, index=False)
