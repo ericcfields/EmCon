@@ -3,7 +3,7 @@
 Fix psychopy file naming problems for EmCon
 
 Author: Eric Fields
-Version Date: 17 November 2023
+Version Date: 21 November 2023
 """
 
 import os
@@ -30,6 +30,7 @@ for file in os.listdir(join(behav_dir, 'orig')):
     
     #Copy file with corrected name
     if not os.path.isfile(new_file):
+        print('Adding %s' % new_file)
         shutil.copy2(join(behav_dir, 'orig', file), new_file)
     
 
