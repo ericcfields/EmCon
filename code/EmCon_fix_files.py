@@ -19,7 +19,12 @@ behav_dir = join(main_dir, 'psychopy')
 
 for file in os.listdir(join(behav_dir, 'orig')):
     
+    #Sub 06 has two encoding files that need to be combined (see below)
     if file.startswith('06_EmCon_enc') and file.endswith('.csv'):
+        continue
+    
+    #Sub 13 had a false start that generated and extra encoding file
+    if file.startswith('13_EmCon') and ('14h22.10.502' in file):
         continue
     
     #Get rid of repeated study name
