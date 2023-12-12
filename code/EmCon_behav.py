@@ -3,7 +3,7 @@
 Process behvavioral data for EmCon
 
 Author: Eric Fields
-Version Date: 5 December 2023
+Version Date: 12 December 2023
 
 Copyright (c) 2023, Eric Fields
 All rights reserved.
@@ -108,8 +108,7 @@ def process_sub_behav_data(sub_id, main_dir=None, behav_data=None):
     enc_data = enc_data[enc_data['block_loop_thisRepN'] == 1]
 
     #Adjust reaction time for delay in gamepad component starting
-    gp_delay = enc_data['gamepad_resp_started'] - enc_data['resp_cue_text_started']
-    enc_data['gamepad_resp_rt'] += gp_delay
+    enc_data['gamepad_resp_rt'] += 0.05
 
     #Initalize data frame
     if behav_data is None:
@@ -141,13 +140,13 @@ def process_sub_behav_data(sub_id, main_dir=None, behav_data=None):
     #Reaction time
     for cond in ['NEU', 'NEG', 'animal']:
         behav_data.loc[sub_id, cond+'_meanRT'] = enc_data.loc[enc_data['valence'] == cond, 
-                                                              'gamepad_resp_rt'].mean()
+                                                              'gamepad_resp_rt'].mean() * 1000
     for cond in ['NEU', 'NEG', 'animal']:
         behav_data.loc[sub_id, cond+'_medianRT'] = enc_data.loc[enc_data['valence'] == cond, 
-                                                                'gamepad_resp_rt'].median()
+                                                                'gamepad_resp_rt'].median() * 1000
     for cond in ['NEU', 'NEG', 'animal']:
         behav_data.loc[sub_id, cond+'_tmeanRT'] = sps.trim_mean(enc_data.loc[enc_data['valence'] == cond, 
-                                                                            'gamepad_resp_rt'], 0.2)
+                                                                            'gamepad_resp_rt'], 0.2) * 1000
     
     return behav_data
 
