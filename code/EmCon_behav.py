@@ -195,31 +195,31 @@ def process_sub_mem_data(sub_id, mem_data=None, main_dir=None):
     if mem_data is None:
         mem_data = pd.DataFrame(columns= ['NEU_I_Old_N', 'NEU_I_New_N', 'NEG_I_Old_N', 'NEG_I_New_N', 'animal_I_Old_N', 'animal_I_New_N',
                                           'NEU_D_Old_N', 'NEU_D_New_N', 'NEG_D_Old_N', 'NEG_D_New_N', 'animal_D_Old_N', 'animal_D_New_N',
-                                          'NEU_I_HitRate', 'NEG_I_HitRate', 'animal_I_HitRate',
-                                          'NEU_D_HitRate', 'NEG_D_HitRate', 'animal_D_HitRate',
-                                          'NEU_I_FARate', 'NEG_I_FARate', 'animal_I_FARate',
-                                          'NEU_D_FARate', 'NEG_D_FARate', 'animal_D_FARate',
-                                          'NEU_I_dprime', 'NEG_I_dprime', 'animal_I_dprime',
-                                          'NEU_D_dprime', 'NEG_D_dprime', 'animal_D_dprime',
-                                          'NEU_I_Az', 'NEG_I_Az', 'animal_I_Az',
-                                          'NEU_D_Az', 'NEG_D_Az', 'animal_D_Az',
-                                          'NEU_I_criterion', 'NEG_I_criterion', 'animal_I_criterion',
-                                          'NEU_D_criterion', 'NEG_D_criterion', 'animal_D_criterion',
-                                          'NEU_I_A', 'NEG_I_A', 'animal_I_A',
-                                          'NEU_D_A', 'NEG_D_A', 'animal_D_A',
-                                          'NEU_I_B', 'NEG_I_B', 'animal_I_B',
-                                          'NEU_D_B', 'NEG_D_B', 'animal_D_B',
-                                          'NEU_I_K_HitRate', 'NEG_I_K_HitRate', 'animal_I_K_HitRate',
-                                          'NEU_D_K_HitRate', 'NEG_D_K_HitRate', 'animal_D_K_HitRate',
-                                          'NEU_I_R_HitRate', 'NEG_I_R_HitRate', 'animal_I_R_HitRate',
-                                          'NEU_D_R_HitRate', 'NEG_D_R_HitRate', 'animal_D_R_HitRate',
-                                          'NEU_I_K_FARate', 'NEG_I_K_FARate', 'animal_I_K_FARate',
-                                          'NEU_D_K_FARate', 'NEG_D_K_FARate', 'animal_D_K_FARate',
-                                          'NEU_I_R_FARate', 'NEG_I_R_FARate', 'animal_I_R_FARate',
-                                          'NEU_D_R_FARate', 'NEG_D_R_FARate', 'animal_D_R_FARate'])
+                                          'ALL_I_HitRate', 'NEU_I_HitRate', 'NEG_I_HitRate', 'animal_I_HitRate',
+                                          'ALL_D_HitRate', 'NEU_D_HitRate', 'NEG_D_HitRate', 'animal_D_HitRate',
+                                          'ALL_I_FARate', 'NEU_I_FARate', 'NEG_I_FARate', 'animal_I_FARate',
+                                          'ALL_D_FARate', 'NEU_D_FARate', 'NEG_D_FARate', 'animal_D_FARate',
+                                          'ALL_I_dprime', 'NEU_I_dprime', 'NEG_I_dprime', 'animal_I_dprime',
+                                          'ALL_D_dprime', 'NEG_D_dprime', 'animal_D_dprime',
+                                          'ALL_I_Az', 'NEU_I_Az', 'NEG_I_Az', 'animal_I_Az',
+                                          'ALL_D_Az', 'NEU_D_Az', 'NEG_D_Az', 'animal_D_Az',
+                                          'ALL_I_criterion', 'NEU_I_criterion', 'NEG_I_criterion', 'animal_I_criterion',
+                                          'ALL_D_criterion', 'NEU_D_criterion', 'NEG_D_criterion', 'animal_D_criterion',
+                                          'ALL_I_A', 'NEU_I_A', 'NEG_I_A', 'animal_I_A',
+                                          'ALL_D_A', 'NEU_D_A', 'NEG_D_A', 'animal_D_A',
+                                          'ALL_I_B', 'NEU_I_B', 'NEG_I_B', 'animal_I_B',
+                                          'ALL_D_B', 'NEU_D_B', 'NEG_D_B', 'animal_D_B',
+                                          'ALL_I_K_HitRate', 'NEU_I_K_HitRate', 'NEG_I_K_HitRate', 'animal_I_K_HitRate',
+                                          'ALL_D_K_HitRate', 'NEU_D_K_HitRate', 'NEG_D_K_HitRate', 'animal_D_K_HitRate',
+                                          'ALL_I_R_HitRate', 'NEU_I_R_HitRate', 'NEG_I_R_HitRate', 'animal_I_R_HitRate',
+                                          'ALL_D_R_HitRate', 'NEU_D_R_HitRate', 'NEG_D_R_HitRate', 'animal_D_R_HitRate',
+                                          'ALL_I_K_FARate', 'NEU_I_K_FARate', 'NEG_I_K_FARate', 'animal_I_K_FARate',
+                                          'ALL_D_K_FARate', 'NEU_D_K_FARate', 'NEG_D_K_FARate', 'animal_D_K_FARate',
+                                          'ALL_I_R_FARate', 'NEU_I_R_FARate', 'NEG_I_R_FARate', 'animal_I_R_FARate',
+                                          'ALL_D_R_FARate', 'NEU_D_R_FARate', 'NEG_D_R_FARate', 'animal_D_R_FARate'])
     
     for mem_test in ['I', 'D']:
-        for val_cond in ['NEU', 'NEG', 'animal']:
+        for val_cond in ['ALL', 'NEU', 'NEG', 'animal']:
             
             #Get relevant data
             if mem_test == 'I':
@@ -230,7 +230,10 @@ def process_sub_mem_data(sub_id, mem_data=None, main_dir=None):
                 continue
         
             #Just the trials in the current condition
-            cond_idx = ret_data['valence'] == val_cond
+            if val_cond == 'ALL':
+                cond_idx = ret_data['valence'].isin(['NEU', 'NEG', 'animal'])
+            else:
+                cond_idx = ret_data['valence'] == val_cond
             
             #Calculate hits, misses, false alarms, and correct rejections
             hits = sum((ret_data.loc[cond_idx, 'mem_cond'] == 'Old') &
@@ -253,8 +256,9 @@ def process_sub_mem_data(sub_id, mem_data=None, main_dir=None):
             assert FA == K_FA + R_FA
             
             #Trial numbers
-            mem_data.at[sub_id, '%s_%s_%s' % (val_cond, mem_test, 'Old_N')] = hits + misses
-            mem_data.at[sub_id, '%s_%s_%s' % (val_cond, mem_test, 'New_N')] = FA + CR
+            if val_cond != 'ALL':
+                mem_data.at[sub_id, '%s_%s_%s' % (val_cond, mem_test, 'Old_N')] = hits + misses
+                mem_data.at[sub_id, '%s_%s_%s' % (val_cond, mem_test, 'New_N')] = FA + CR
             
             #Memory rates
             mem_data.at[sub_id, '%s_%s_%s' % (val_cond, mem_test, 'HitRate')] = hits / (hits + misses)
