@@ -3,7 +3,7 @@
 Process behvavioral data for EmCon
 
 Author: Eric Fields
-Version Date: 12 December 2023
+Version Date: 20 February 2024
 
 Copyright (c) 2023, Eric Fields
 All rights reserved.
@@ -245,14 +245,14 @@ def process_sub_mem_data(sub_id, mem_data=None, main_dir=None):
             CR = sum((ret_data.loc[cond_idx, 'mem_cond'] == 'New') &
                      (ret_data.loc[cond_idx, 'oldnew_resp_keys'] == 4))
             K_hits = sum((ret_data.loc[cond_idx, 'mem_cond'] == 'Old') &
-                        (ret_data.loc[cond_idx, 'rk_resp_keys'] == '4'))
+                        (ret_data.loc[cond_idx, 'rk_resp_keys'].astype(float) == 4))
             R_hits = sum((ret_data.loc[cond_idx, 'mem_cond'] == 'Old')&
-                        (ret_data.loc[cond_idx, 'rk_resp_keys'] == '5'))
+                        (ret_data.loc[cond_idx, 'rk_resp_keys'].astype(float) == 5))
             assert hits == K_hits + R_hits
             K_FA = sum((ret_data.loc[cond_idx, 'mem_cond'] == 'New') &
-                       (ret_data.loc[cond_idx, 'rk_resp_keys'] == '4'))
+                       (ret_data.loc[cond_idx, 'rk_resp_keys'].astype(float) == 4))
             R_FA = sum((ret_data.loc[cond_idx, 'mem_cond'] == 'New') &
-                       (ret_data.loc[cond_idx, 'rk_resp_keys'] == '5'))
+                       (ret_data.loc[cond_idx, 'rk_resp_keys'].astype(float) == 5))
             assert FA == K_FA + R_FA
             
             #Trial numbers

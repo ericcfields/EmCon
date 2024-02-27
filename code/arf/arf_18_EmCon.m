@@ -55,8 +55,8 @@ EEGchans = 1:(num_chans-2);
 art_chan_low_pass = 15;
 
 %Independent components to remove from data (if nonre, ICrej = false)
-ICrej = false;
-blink_corr = false; %true if one or more rejected ICs represent blinks
+ICrej = [1, 10];
+blink_corr = true; %true if one or more rejected ICs represent blinks
 
 %Electrodes to interpolate
 interpolate_electrodes = {};
@@ -73,7 +73,7 @@ blink_windowstep = 25;
 
 %Step-like artifacts for all channels
 %Flag 3
-step_thresh      = 50;
+step_thresh      = 55;
 step_windowsize  = 300;
 step_windowstep  = 25;
 step_chans = 1:num_chans;

@@ -1,7 +1,7 @@
 %Preprocessing script for EmCon
 %
 %AUTHOR: Eric Fields
-%VERSION DATE: 3 November 2023
+%VERSION DATE: 20 February 2024f
 
 %Copyright (c) 2023, Eric Fields
 %All rights reserved.
@@ -27,7 +27,7 @@
 %clear the workspace and close all figures/windows
 clearvars; close all;
 %make sure warnings are on
-warning 'on';
+warning('on');
 
 
 %% ***** PARAMETERS *****
@@ -40,8 +40,6 @@ EmCon_preproc_params;
 
 
 %% ***** SET-UP *****
-
-warning('on');
 
 %Paths
 cd(main_dir)
@@ -242,7 +240,6 @@ for i = 1:length(sub_ids)
     %Add memory flags to EEG.EVENTLIST
     try
         EEG = EmCon_add_mem_flags(EEG, main_dir);
-        
     catch
         warning('There was a problem adding the memory flags.');
     end
@@ -259,7 +256,22 @@ for i = 1:length(sub_ids)
     [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, CURRENTSET, 'setname', [EEG.setname '_be'], 'gui', 'off');
     
     %Check bin counts
-    %TO DO
+    if ~all(EEG.EVENTLIST.trialsperbin(1:3) == [200, 200, 40])
+        warning('Bin counts are wrong for bins 1-3');
+    end
+    if sum(EEG.EVENTLIST.trialsperbin(8:9)) ~= 100
+        warning('Immediate NEU memory bin counts are wrong')
+    end
+    if sum(EEG.EVENTLIST.trialsperbin(12:13)) ~= 100
+        warning('Immediate NEG memory bin counts are wrong')
+    end
+
+    if sum(EEG.EVENTLIST.trialsperbin(24:25)) ~= 100
+        warning('Delayed NEU memory bin counts are wrong')
+    end
+    if sum(EEG.EVENTLIST.trialsperbin(28:29)) ~= 100
+        warning('Delayed NEG memory bin counts are wrong')
+    end
     
     %Add ICA weights if they exist
     if exist(fullfile(main_dir, 'ICA', [sub_id '_ICAw.txt']), 'file')

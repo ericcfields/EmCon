@@ -1,7 +1,7 @@
 %Artifact rejection script for EmCon
 %
 %AUTHOR: Eric Fields
-%VERSION DATE: 19 February 2024
+%VERSION DATE: 9 August 2023
 
 %Copyright (c) 2023, Eric Fields
 %All rights reserved.
@@ -55,11 +55,11 @@ EEGchans = 1:(num_chans-2);
 art_chan_low_pass = 15;
 
 %Independent components to remove from data (if nonre, ICrej = false)
-ICrej = false;
-blink_corr = false; %true if one or more rejected ICs represent blinks
+ICrej = 1;
+blink_corr = true; %true if one or more rejected ICs represent blinks
 
 %Electrodes to interpolate
-interpolate_electrodes = {};
+interpolate_electrodes = {'FC4'};
 
 %Time window in which to detect artifacts for each epoch
 rej_window = [-200, 1100]; %must be smaller than or equal to epoch specified in preprocessing file.
@@ -261,7 +261,6 @@ end
 
 %Rejection report
 [~, ~, ~, rej_by_bin] = pop_summary_AR_eeg_detection(EEG, 'none');
-fprintf('Smallest New/Old Bin: %d\n\n', min(EEG.EVENTLIST.trialsperbin([8, 9, 12, 13, 24, 25, 28, 29]) - rej_by_bin([8, 9, 12, 13, 24, 25, 28, 29])));
 chan_rej_array = chan_rej_report(EEG);
 
 %Plot threshold table window

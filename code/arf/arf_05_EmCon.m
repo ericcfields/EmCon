@@ -55,7 +55,7 @@ EEGchans = 1:(num_chans-2);
 art_chan_low_pass = 15;
 
 %Independent components to remove from data (if nonre, ICrej = false)
-ICrej = 1;
+ICrej = [1, 12];
 blink_corr = true; %true if one or more rejected ICs represent blinks
 
 %Electrodes to interpolate
@@ -80,14 +80,14 @@ step_chans = 1:num_chans;
 
 %Peak to peak amplitude for all channels
 %Flag 4
-ppa_thresh       = 250;
+ppa_thresh       = 300;
 ppa_windowsize   = 200;
 ppa_windowstep   = 25;
 ppa_chans = 1:num_chans;
 
 %Step-based drift detection
 %Flag 5
-drift_thresh     = 40;
+drift_thresh     = 60;
 drift_windowsize = 1000;
 drift_windowstep = 50;
 drift_chans = 1:num_chans;

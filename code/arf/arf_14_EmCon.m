@@ -1,7 +1,7 @@
 %Artifact rejection script for EmCon
 %
 %AUTHOR: Eric Fields
-%VERSION DATE: 19 February 2024
+%VERSION DATE: 9 August 2023
 
 %Copyright (c) 2023, Eric Fields
 %All rights reserved.
@@ -55,8 +55,8 @@ EEGchans = 1:(num_chans-2);
 art_chan_low_pass = 15;
 
 %Independent components to remove from data (if nonre, ICrej = false)
-ICrej = false;
-blink_corr = false; %true if one or more rejected ICs represent blinks
+ICrej = [1, 8, 10];
+blink_corr = true; %true if one or more rejected ICs represent blinks
 
 %Electrodes to interpolate
 interpolate_electrodes = {};
