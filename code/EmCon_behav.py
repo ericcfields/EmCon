@@ -3,7 +3,7 @@
 Process behvavioral data for EmCon
 
 Author: Eric Fields
-Version Date: 20 February 2024
+Version Date: 24 February 2024
 
 Copyright (c) 2023, Eric Fields
 All rights reserved.
@@ -174,6 +174,8 @@ def process_sub_mem_data(sub_id, mem_data=None, main_dir=None):
     ret1_data = pd.read_csv(join(behav_dir, ret1_file))
     #Remove dots in column names
     ret1_data.columns = [x.replace('.', '_') for x in ret1_data.columns]
+    #Make R/K response column numeric
+    ret1_data['rk_resp_keys'] = ret1_data['rk_resp_keys'].replace({'None':np.nan}).astype(float)
 
     ##### Delayed retrieval #####
     #Find retrieval file
@@ -187,6 +189,8 @@ def process_sub_mem_data(sub_id, mem_data=None, main_dir=None):
         ret2_data = pd.read_csv(join(behav_dir, ret2_file))
         #Remove dots in column names
         ret2_data.columns = [x.replace('.', '_') for x in ret2_data.columns]
+        #Make R/K response column numeric
+        ret2_data['rk_resp_keys'] = ret2_data['rk_resp_keys'].replace({'None':np.nan}).astype(float)
         
     
     ############## CALCULATE MEMORY STATS ##############
@@ -245,14 +249,14 @@ def process_sub_mem_data(sub_id, mem_data=None, main_dir=None):
             CR = sum((ret_data.loc[cond_idx, 'mem_cond'] == 'New') &
                      (ret_data.loc[cond_idx, 'oldnew_resp_keys'] == 4))
             K_hits = sum((ret_data.loc[cond_idx, 'mem_cond'] == 'Old') &
-                        (ret_data.loc[cond_idx, 'rk_resp_keys'].astype(float) == 4))
+                        (ret_data.loc[cond_idx, 'rk_resp_keys'] == 4))
             R_hits = sum((ret_data.loc[cond_idx, 'mem_cond'] == 'Old')&
-                        (ret_data.loc[cond_idx, 'rk_resp_keys'].astype(float) == 5))
+                        (ret_data.loc[cond_idx, 'rk_resp_keys'] == 5))
             assert hits == K_hits + R_hits
             K_FA = sum((ret_data.loc[cond_idx, 'mem_cond'] == 'New') &
-                       (ret_data.loc[cond_idx, 'rk_resp_keys'].astype(float) == 4))
+                       (ret_data.loc[cond_idx, 'rk_resp_keys'] == 4))
             R_FA = sum((ret_data.loc[cond_idx, 'mem_cond'] == 'New') &
-                       (ret_data.loc[cond_idx, 'rk_resp_keys'].astype(float) == 5))
+                       (ret_data.loc[cond_idx, 'rk_resp_keys'] == 5))
             assert FA == K_FA + R_FA
             
             #Trial numbers
