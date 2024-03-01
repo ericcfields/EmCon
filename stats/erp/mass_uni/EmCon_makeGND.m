@@ -6,6 +6,7 @@
 clearvars; close all;
 
 main_dir = 'C:\Users\fieldsec\OneDrive - Westminster College\Documents\ECF\Research\EmCon\DATA';
+mua_dir = fullfile(main_dir, 'stats', 'erp', 'mass_uni');
 
 %Get files to include in GND
 sub_files = strsplit(fileread(fullfile(main_dir, 'ERPsets\GM\EmCon_gm_list.txt')), '\n');
@@ -56,7 +57,7 @@ end
 %% Create GND
 
 %Change directory to make saving GND easy
-cd(fullfile(main_dir, 'stats', 'erp'));
+cd(mua_dir);
 
 %List of filtered ERPs to include in GND
 filt_sub_files = cellfun(@(x) [x(1:end-4) '_10HzLP.erp'], sub_files, 'UniformOutput', false);

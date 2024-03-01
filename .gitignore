@@ -30,4 +30,4 @@ psychopy/*
 code/old/*
 
 ### File subsets in folder to ignore ###
-stats/behavioral/*.csv
+stats/**/*.csv

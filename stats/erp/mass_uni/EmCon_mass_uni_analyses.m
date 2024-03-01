@@ -11,10 +11,11 @@ clearvars; close all;
 
 %Paths
 main_dir = 'C:\Users\fieldsec\OneDrive - Westminster College\Documents\ECF\Research\EmCon\DATA';
-cd(fullfile(main_dir, 'stats', 'erp'));
+mua_dir = fullfile(main_dir, 'stats', 'erp', 'mass_uni');
+cd(mua_dir);
 
 %Load GND
-load(fullfile(main_dir, 'stats', 'erp', 'EmCon_128Hz.GND'), '-mat');
+load(fullfile(mua_dir, 'EmCon_128Hz.GND'), '-mat');
 
 %Parameters
 n_perm = 1e4;
