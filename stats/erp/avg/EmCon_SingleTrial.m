@@ -1,7 +1,7 @@
 %Get single trial data for EmCon analyses
 %
 %Author: Eric Fields
-%Version Date: 29 February 2024
+%Version Date: 5 March 2024
 
 %% SET-UP
 
@@ -29,10 +29,6 @@ row = 0;
 
 %Get trial data
 for s = 1:length(subs)
-
-    if strcmp(subs{s}, '06_EmCon')
-        continue;
-    end
     
     fprintf('Retrieving data from %s\n\n', subs{s});
     
