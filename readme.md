@@ -1,10 +1,10 @@
 # EmCon
 
-Last updated: 13 October 2023
+Last updated: 5 March 2024
 
 **Summary**
 
-This study is designed to examine the relationship between the LPP of the ERP and subsequent memory at varying delays. EEG is recorded as participants are presented with a list of 200 neutral words, 200 negative words, and 40 animal words. The task is to press a button to indicate whether the word is an animal word. After a short delay, half the presented stimuli along with new neutral, negative, and animal words are presented and participants compete a remember/know/new memory test. The other half of the stimuli are tested in a memory test the next day. 
+This study is designed to examine the relationship between the late positive potential (LPP) of the event-related potential (ERP) and subsequent memory at varying delays. EEG is recorded as participants are presented with a list of 200 neutral words, 200 negative words, and 40 animal words. The task is to press a button to indicate whether the word is an animal word. After a short delay, half the presented stimuli along with new neutral, negative, and animal words are presented and participants compete a remember/know/new memory test. The other half of the stimuli are tested in a memory test the next day. 
 
 **Contact Information**
 
@@ -14,14 +14,14 @@ Westminster College
 
 **License**
 
-Copyright (c) 2023, Eric Fields  
+Copyright (c) 2024, Eric Fields  
 All rights reserved.  
 This code is free and open source software made available under the terms of the 3-clause BSD license:  
 https://opensource.org/licenses/BSD-3-Clause
 
 **Software Versions**
 
-Code was developed and tested in MATLAB 2023a, EEGLAB 2023.1, ERPLAB 10.01, Python 3.11, and pandas 1.5.3.
+Code was developed and tested in MATLAB 2023a, EEGLAB 2023.1, ERPLAB 10.04, Python 3.10 & 3.11, and pandas 2.1.4.
 
 
 ## Folder structure and data
@@ -31,7 +31,7 @@ Code was developed and tested in MATLAB 2023a, EEGLAB 2023.1, ERPLAB 10.01, Pyth
 * EEGsets - All saved EEGLAB datasets (unaveraged EEG data). The processing stream saves the EEGset after import (raw), after epoching but prior to artifact correction and rejection (preart), and after after rejection and correction (postart).
 * ERPsets - All saved ERPLAB averaged datasets.
 * belist - Contains summary output files from the creation of the ERPLAB EVENTLIST, assigning events to bins, and ERPLAB artifact rejection, as well as a file summarizing the number of times each event code appears.
-* ICA - Contains a record of epochs to exclude from ICA training and electrodes to exclude from ICA for each subject (generated in the pre-ICA artifact rejection process). After ICA is ran, this folder contains a text file with the calculated ICA weights.
+* ICA - Contains a record of epochs to exclude from ICA training and electrodes to exclude from ICA for each subject (generated in the pre-ICA artifact rejection process). After ICA is run, this folder contains a text file with the calculated ICA weights.
 * code - Contains all data processing code.
 * stats - Contains data and code for statistical analysis
 

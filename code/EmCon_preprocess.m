@@ -137,9 +137,9 @@ for i = 1:length(sub_ids)
         [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, 0, 'setname', sub_id, 'gui', 'off');
         
         %Fix problems in recorded data (e.g., switched electrodes)
-        if exist(fullfile(main_dir, 'code', 'fix_raw', [sub_id '_fix_raw.m']), 'file')
+        if exist(fullfile(main_dir, 'code', 'fix_raw', sprintf('fix_raw_%s.m', sub_id)), 'file')
             addpath(fullfile(main_dir, 'code', 'fix_raw'));
-            run(fullfile(main_dir, 'code', 'fix_raw', [sub_id '_fix_raw.m']));
+            run(fullfile(main_dir, 'code', 'fix_raw', sprintf('fix_raw_%s.m', sub_id)));
         end
         
         %Check that the correct number of channels was recorded

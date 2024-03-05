@@ -23,9 +23,6 @@ p_time_wind = [500, 800];
 
 %% GET SINGLE TRIAL DATA
 
-%Get rid of warnings about adding data to each row
-warning('off', 'MATLAB:table:RowsAddedExistingVars');
-
 %Initialize variables
 data = table;
 row = 0;
