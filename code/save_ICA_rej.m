@@ -5,7 +5,7 @@
 %script can use later
 %
 %Author: Eric Fields
-%Version Date: 9 August 2023
+%Version Date: 7 March 2024
 
 %Copyright (c) 2023, Eric Fields
 %All rights reserved.
@@ -15,6 +15,9 @@
 
 %Get bad epochs
 bad_epochs = EEG.reject.rejmanual;
+if isempty(bad_epochs)
+    bad_epochs = zeros(1, EEG.trials);
+end
 assert(length(bad_epochs) == EEG.trials);
 %Save bad epochs
 writematrix(bad_epochs', fullfile(main_dir, 'ICA', [sub_id '_bad_epochs.csv']));

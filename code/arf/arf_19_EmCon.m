@@ -1,7 +1,7 @@
 %Artifact rejection script for EmCon
 %
 %AUTHOR: Eric Fields
-%VERSION DATE: 19 February 2024
+%VERSION DATE: 7 March 2024
 
 %Copyright (c) 2023, Eric Fields
 %All rights reserved.
@@ -55,7 +55,7 @@ EEGchans = 1:(num_chans-2);
 art_chan_low_pass = 15;
 
 %Independent components to remove from data (if nonre, ICrej = false)
-ICrej = [1, 7, 10];
+ICrej = [1, 3, 5];
 blink_corr = true; %true if one or more rejected ICs represent blinks
 
 %Electrodes to interpolate
@@ -73,7 +73,7 @@ blink_windowstep = 25;
 
 %Step-like artifacts for all channels
 %Flag 3
-step_thresh      = 55;
+step_thresh      = 50;
 step_windowsize  = 300;
 step_windowstep  = 25;
 step_chans = 1:num_chans;
@@ -238,7 +238,7 @@ if manual_reject
     for epoch_num = manual_reject
         EEG= markartifacts(EEG, [1, 6], 1:EEG.nbchan, [], epoch_num, 1);
     end
-    EEG = pop_syncroartifacts(EEG, 'Direction', 'bidirectional');
+    EEG = ecf_pop_syncroartifacts(EEG, 'Direction', 'bidirectional');
     pop_summary_AR_eeg_detection(EEG, '');
 end
 
@@ -253,7 +253,7 @@ if exist('manual_unreject', 'var') && manual_unreject
     fprintf('\n**********************************************************\n\n')
     EEG.reject.rejmanual(manual_unreject) = 0;
     EEG.reject.rejmanualE(:, manual_unreject) = 0;
-    EEG = pop_syncroartifacts(EEG, 'Direction', 'eeglab2erplab');
+    EEG = ecf_pop_syncroartifacts(EEG, 'Direction', 'eeglab2erplab');
     pop_summary_AR_eeg_detection(EEG, '');
 end
 
