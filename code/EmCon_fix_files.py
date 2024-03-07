@@ -3,7 +3,7 @@
 Fix problems in PsychoPy files
 
 Author: Eric Fields
-Version Date: 5 March 2024
+Version Date: 7 March 2024
 """
 
 import os
@@ -26,6 +26,9 @@ for file in os.listdir(join(behav_dir, 'orig')):
     
     #Sub 06 has two encoding files that need to be combined (see below)
     if file.startswith('06_EmCon_enc') and file.endswith('.csv'):
+        continue
+    
+    if file.startswith('07_EmCon'):
         continue
     
     #Sub 13 had a false start that generated an extra encoding file

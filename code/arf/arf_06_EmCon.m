@@ -1,7 +1,7 @@
 %Artifact rejection script for EmCon
 %
 %AUTHOR: Eric Fields
-%VERSION DATE: 9 August 2023
+%VERSION DATE: 7 March 2024 
 
 %Copyright (c) 2023, Eric Fields
 %All rights reserved.
@@ -99,7 +99,7 @@ drift_chans = [1:26, 28];
 % manual_reject = false; %no manual rejections
 % manual_reject = [1, 600]; %manually reject epochs 1 and 600
 % manual_reject = [1, 20:43, 201]; %manually reject epochs, 1, 20 through 43, and 201
-manual_reject = false;
+manual_reject = [152, 153];
 
 %Epoch numbers for trials that should be protected from artifact rejection
 %YOU PROBABLY DON'T WANT TO DO THIS!
@@ -238,7 +238,7 @@ if manual_reject
     for epoch_num = manual_reject
         EEG= markartifacts(EEG, [1, 6], 1:EEG.nbchan, [], epoch_num, 1);
     end
-    EEG = pop_syncroartifacts(EEG, 'Direction', 'bidirectional');
+    EEG = ecf_pop_syncroartifacts(EEG, 'Direction', 'bidirectional');
     pop_summary_AR_eeg_detection(EEG, '');
 end
 
@@ -253,7 +253,7 @@ if exist('manual_unreject', 'var') && manual_unreject
     fprintf('\n**********************************************************\n\n')
     EEG.reject.rejmanual(manual_unreject) = 0;
     EEG.reject.rejmanualE(:, manual_unreject) = 0;
-    EEG = pop_syncroartifacts(EEG, 'Direction', 'eeglab2erplab');
+    EEG = ecf_pop_syncroartifacts(EEG, 'Direction', 'eeglab2erplab');
     pop_summary_AR_eeg_detection(EEG, '');
 end
 
@@ -261,6 +261,7 @@ end
 
 %Rejection report
 [~, ~, ~, rej_by_bin] = pop_summary_AR_eeg_detection(EEG, 'none');
+fprintf('Smallest New/Old Bin: %d\n\n', min(EEG.EVENTLIST.trialsperbin([8, 9, 12, 13, 24, 25, 28, 29]) - rej_by_bin([8, 9, 12, 13, 24, 25, 28, 29])));
 chan_rej_array = chan_rej_report(EEG);
 
 %Plot threshold table window

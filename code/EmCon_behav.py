@@ -3,7 +3,7 @@
 Process behvavioral data for EmCon
 
 Author: Eric Fields
-Version Date: 24 February 2024
+Version Date: 7 March 2024
 
 Copyright (c) 2023, Eric Fields
 All rights reserved.
@@ -204,7 +204,7 @@ def process_sub_mem_data(sub_id, mem_data=None, main_dir=None):
                                           'ALL_I_FARate', 'NEU_I_FARate', 'NEG_I_FARate', 'animal_I_FARate',
                                           'ALL_D_FARate', 'NEU_D_FARate', 'NEG_D_FARate', 'animal_D_FARate',
                                           'ALL_I_dprime', 'NEU_I_dprime', 'NEG_I_dprime', 'animal_I_dprime',
-                                          'ALL_D_dprime', 'NEU_I_dprime', 'NEG_D_dprime', 'animal_D_dprime',
+                                          'ALL_D_dprime', 'NEU_D_dprime', 'NEG_D_dprime', 'animal_D_dprime',
                                           'ALL_I_Az', 'NEU_I_Az', 'NEG_I_Az', 'animal_I_Az',
                                           'ALL_D_Az', 'NEU_D_Az', 'NEG_D_Az', 'animal_D_Az',
                                           'ALL_I_criterion', 'NEU_I_criterion', 'NEG_I_criterion', 'animal_I_criterion',

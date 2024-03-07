@@ -55,8 +55,8 @@ EEGchans = 1:(num_chans-2);
 art_chan_low_pass = 15;
 
 %Independent components to remove from data (if nonre, ICrej = false)
-ICrej = false;
-blink_corr = false; %true if one or more rejected ICs represent blinks
+ICrej = [1, 4, 17];
+blink_corr = true; %true if one or more rejected ICs represent blinks
 
 %Electrodes to interpolate
 interpolate_electrodes = {};
@@ -80,7 +80,7 @@ step_chans = 1:num_chans;
 
 %Peak to peak amplitude for all channels
 %Flag 4
-ppa_thresh       = 250;
+ppa_thresh       = 500;
 ppa_windowsize   = 200;
 ppa_windowstep   = 25;
 ppa_chans = 1:num_chans;
