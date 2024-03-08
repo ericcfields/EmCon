@@ -1,7 +1,7 @@
 %Preprocessing script for EmCon
 %
 %AUTHOR: Eric Fields
-%VERSION DATE: 20 February 2024f
+%VERSION DATE: 8 March 2024
 
 %Copyright (c) 2023, Eric Fields
 %All rights reserved.
@@ -36,7 +36,7 @@ warning('on');
 EmCon_preproc_params;
 
 %String, cell array, or text file giving IDs of subjects to process
-% subject_ids = get_subset('bdf', 'raw', main_dir);
+subject_ids = get_subset('raw', [], main_dir);
 
 
 %% ***** SET-UP *****
@@ -188,8 +188,10 @@ for i = 1:length(sub_ids)
     %% Re-reference
     
     %Find numbers of reference channels
-    ref_chans = find(ismember({EEG.chanlocs.labels}, ref_chans));
-    excl_re_ref = find(ismember({EEG.chanlocs.labels}, excl_re_ref));
+    if i == 1 %only need to do this the first time through the loop
+        ref_chans = find(ismember({EEG.chanlocs.labels}, ref_chans));
+        excl_re_ref = find(ismember({EEG.chanlocs.labels}, excl_re_ref));
+    end
 
     %Re-reference
     EEG = pop_reref(EEG, ref_chans,'exclude', excl_re_ref);
@@ -256,22 +258,7 @@ for i = 1:length(sub_ids)
     [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, CURRENTSET, 'setname', [EEG.setname '_be'], 'gui', 'off');
     
     %Check bin counts
-    if ~all(EEG.EVENTLIST.trialsperbin(1:3) == [200, 200, 40])
-        warning('Bin counts are wrong for bins 1-3');
-    end
-    if sum(EEG.EVENTLIST.trialsperbin(8:9)) ~= 100
-        warning('Immediate NEU memory bin counts are wrong')
-    end
-    if sum(EEG.EVENTLIST.trialsperbin(12:13)) ~= 100
-        warning('Immediate NEG memory bin counts are wrong')
-    end
-
-    if sum(EEG.EVENTLIST.trialsperbin(24:25)) ~= 100
-        warning('Delayed NEU memory bin counts are wrong')
-    end
-    if sum(EEG.EVENTLIST.trialsperbin(28:29)) ~= 100
-        warning('Delayed NEG memory bin counts are wrong')
-    end
+    EmCon_check_bin_counts(EEG);
     
     %Add ICA weights if they exist
     if exist(fullfile(main_dir, 'ICA', [sub_id '_ICAw.txt']), 'file')
@@ -287,7 +274,7 @@ for i = 1:length(sub_ids)
     %Save pre-artifact rejection EEGset
     EEG = eeg_checkset(EEG);
     EEG = pop_saveset(EEG, 'filename', [sub_id '_preart.set'], 'filepath', fullfile(main_dir, 'EEGsets'));
-    [ALLEEG, EEG] = eeg_store(ALLEEG, EEG, CURRENTSET);
+    [ALLEEG, EEG, CURRENTSET] = eeg_store(ALLEEG, EEG, CURRENTSET);
 
 
 end

@@ -24,7 +24,7 @@ main_dir = EmCon_main_dir();
 default_arf = fullfile(main_dir, 'code', 'arf', 'EmCon_default_arf.m');
 
 %Batch processing
-% subject_ids = get_subset('postart', [], main_dir);
+subject_ids = get_subset('postart', [], main_dir);
 
 
 %% Set-up

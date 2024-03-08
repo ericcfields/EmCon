@@ -1,9 +1,10 @@
 %Make GM file from usable subjects for EmCon
 %
 %Author: Eric Fields
-%Version Date: 1 December 2023
+%Version Date: 8 March 2024
 
-%% Set-up
+
+%% SET-UP
 
 clearvars; close all;
 
@@ -24,7 +25,7 @@ delete EmCon_GM_list.txt
 cd(main_dir);
 
 
-%% Make GM lists
+%% MAKE GM LISTS
 
 %Get array of usable subjects
 data_log = readcell(fullfile(main_dir, 'EmCon_EEG_DataLog.xlsx'));
@@ -40,7 +41,7 @@ for i = 1:length(usable_subs)
 end
 fclose(f_gm);
 
-%% Make GM ERPsets
+%% MAKE GM ERPSETS
 
 subset = {''};
 
@@ -79,3 +80,9 @@ for i = 1:length(subset)
 end
                 
 eeglab redraw; erplab redraw;
+
+
+%% ADD MAIN EFFECT AND DIFFERENCE BINS
+
+%TO DO
+

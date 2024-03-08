@@ -1,7 +1,7 @@
 %Make GND variable & file for EmCon
 %
 %Author: Eric Fields
-%Version Date: 27 February 2024
+%Version Date: 8 March 2024
 
 clearvars; close all;
 
@@ -11,6 +11,7 @@ mua_dir = fullfile(main_dir, 'stats', 'erp', 'mass_uni');
 %Get files to include in GND
 sub_files = strsplit(fileread(fullfile(main_dir, 'ERPsets\GM\EmCon_gm_list.txt')), '\n');
 sub_files = sub_files(contains(sub_files, '.erp'));
+sub_files = cellfun(@(x) strtrim(x), sub_files, 'UniformOutput', false);
 
 
 %% Filter and strip impedance values
@@ -27,7 +28,7 @@ for i =  1:length(sub_files)
     %Skip existing filtered sets
     filt_setname = sprintf('%s_%dHzLP.erp', sub_id, lp_thresh);
     if exist(fullfile(erp_dir, filt_setname), 'file') && ~overwrite
-        fprintf('\n%s already exists (skipping)\n\n', filt_setname);
+        fprintf('\n%s already exists (skipping)\n', filt_setname);
         continue;
     end
 

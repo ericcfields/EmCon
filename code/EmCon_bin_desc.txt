@@ -1,5 +1,5 @@
-#Bin descriptor for EmCon
-#Version Date: 13 October 2023
+#Bin description
+#Version Date: 8 March 2024
 
 ####################### MEMORY-INDEPENDENT BINS #######################
 
@@ -37,11 +37,12 @@ bin 7
 
 ####################### MEMORY BINS #######################
 
-#Flag 1 - Indicates whether memory flags are present
+#Flag 1 - Indicates whether immediate memory flags are present
 #Flag 2 - Immediate old/new (new=0, old=1)
 #Flag 3 - Immediate remember/know (know=0, remember=1)
-#Flag 4 - Delayed old/new (new=0, old=1)
-#Flag 5 - Delayed remember/know (know=0, remember=1)
+#Flag 4 - Indicates whether delayed memory flags are present
+#Flag 5 - Delayed old/new (new=0, old=1)
+#Flag 6 - Delayed remember/know (know=0, remember=1)
 #(flags go from right to left in the syntax below;
 #i.e., the rightmost number is flag 1)
 
@@ -311,3 +312,59 @@ bin 70
 bin 71
 	both_R_delayed_corr
 	.{201;202;211;212:fb<111000>}{230;231}{236}
+
+##### Not Remembered Bins #####
+
+bin 72
+	NEU_NotR_immediate
+	.{201;202:fb<0000x1>}
+
+bin 73
+	NEG_NotR_immediate
+	.{211;212:fb<0000x1>}
+
+bin 74
+	animal_NotR_immediate
+	.{220:fb<0000x1>}
+
+bin 75
+	NEU_NotR_delayed
+	.{201;202:fb<0x1000>}
+
+bin 76
+	NEG_NotR_delayed
+	.{211;212:fb<0x1000>}
+
+bin 77
+	animal_NotR_delayed
+	.{220:fb<0x1000>}
+
+bin 78
+	NEU_NotR_immediate_corr
+	.{201;202:fb<0000x1>}{230;231}{236}
+
+bin 79
+	NEG_NotR_immediate_corr
+	.{211;212:fb<0000x1>}{230;231}{236}
+
+bin 80
+	animal_NotR_immediate_corr
+	.{220:fb<0000x1>}{230;231}{235}
+
+bin 81
+	NEU_NotR_delayed_corr
+	.{201;202:fb<0x1000>}{230;231}{236}
+
+bin 82
+	NEG_NotR_delayed_corr
+	.{211;212:fb<0x1000>}{230;231}{236}
+
+bin 83
+	animal_NotR_delayed_corr
+	.{220:fb<0x1000>}{230;231}{235}
+
+##### Other Bins #####
+
+bin 84
+    all_standards_corr
+    .{201;202;211;212}{230;231}{236}
