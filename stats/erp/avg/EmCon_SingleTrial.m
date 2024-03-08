@@ -10,6 +10,8 @@ clearvars; close all;
 main_dir = EmCon_main_dir();
 st_dir = fullfile(main_dir, 'stats', 'erp', 'avg');
 
+addpath(fullfile(main_dir, 'code'));
+
 %Get array of usable subjects
 use_status = {'YES', 'PROBABLY', 'MAYBE'};
 data_log = readcell(fullfile(main_dir, 'EmCon_EEG_DataLog.xlsx'));
@@ -17,6 +19,8 @@ data_log = data_log(cellfun(@ischar, data_log(:, 3)), :);
 subs = data_log(ismember(data_log(:,3), use_status));
 
 %ERP data parameters
+a_chans = {'FP2', 'Fz', 'F4'};
+a_time_wind = [850, 1100];
 p_chans = {'CP3', 'CPZ', 'CP4', 'P3', 'PZ', 'P4'};
 p_time_wind = [500, 700];
 
@@ -67,6 +71,9 @@ for s = 1:length(subs)
     p_chan_idx = find(ismember({EEG.chanlocs.labels}, p_chans));
     [~, p_start_sample] = min(abs( EEG.times - p_time_wind(1) ));
     [~, p_end_sample  ] = min(abs( EEG.times - p_time_wind(2) ));
+    a_chan_idx = find(ismember({EEG.chanlocs.labels}, a_chans));
+    [~, a_start_sample] = min(abs( EEG.times - a_time_wind(1) ));
+    [~, a_end_sample  ] = min(abs( EEG.times - a_time_wind(2) ));
 
     %Get rid of warnings about adding data to each row
     warning('off', 'MATLAB:table:RowsAddedExistingVars');
@@ -87,6 +94,9 @@ for s = 1:length(subs)
         %Find timelocked event within epoch
         ev_idx = find(EEG.epoch(ep).eventlatency==0);
         assert(length(ev_idx)==1);
+
+        %Add order
+        data{row, 'order'} = ep;
         
         %Get valence condition
         first_bin = EEG.epoch(ep).eventbini(1);
@@ -222,6 +232,7 @@ for s = 1:length(subs)
         end
         
         %Get EEG data
+        data{row, 'frontal_pos'} = mean(mean(EEG.data(a_chan_idx, a_start_sample:a_end_sample, ep)));
         data{row, 'LPP'} = mean(mean(EEG.data(p_chan_idx, p_start_sample:p_end_sample, ep)));
         
         %EEG rejection
@@ -238,50 +249,7 @@ writetable(data, fullfile(st_dir, 'EmCon_SingleTrial.csv'));
 warning('on', 'MATLAB:table:RowsAddedExistingVars');
 
 
-%% CREATE WORD AVERAGED DATA
+%% ADD SUB VARIALBES AND CALCULATE WORD AND SUB AVERAGED DATA
 
-%Get rid of warnings about adding data to each row
-warning('off', 'MATLAB:table:RowsAddedExistingVars');
-
-wdata = table;
-row = 0;
-for wid = unique(data{:, 'word_id'})'
-
-    row = row + 1;
-
-    %Get trials with this word
-    word_idx = data.word_id == wid;
-    word_data = data(word_idx, :);
-
-    %Check for consistency of word and valence
-    assert(height(unique(word_data.word)) == 1);
-    assert(height(unique(word_data.valence)) == 1);
-
-    %Add word id, word, and valence
-    wdata{row, 'word_id'} = wid;
-    wdata{row, 'word'} = string(word_data{1, 'word'}{1});
-    wdata{row, 'valence'} = string(word_data{1, 'valence'}{1});
-
-    %Get LPP and recognition memory for immediate
-    idx = (word_data.delay == "immediate") & (word_data.art_rej == 0);
-    wdata{row, 'N_immediate'} = sum(idx);
-    wdata{row, 'acc_immediate'} = mean(word_data{idx, 'acc'});
-    wdata{row, 'LPP_immediate'} = mean(word_data{idx, 'LPP'});
-    wdata{row, 'recog_mem_immediate'} = mean(word_data{idx, 'old_resp'});
-    wdata{row, 'rk_mem_immediate'} = mean(word_data{idx, 'rk_resp'});
-
-    %Get LPP and recognition memory for delayed
-    idx = (word_data.delay == "delayed") & (word_data.art_rej == 0);
-    wdata{row, 'N_delayed'} = sum(idx);
-    wdata{row, 'acc_delayed'} = mean(word_data{idx, 'acc'});
-    wdata{row, 'LPP_delayed'} = mean(word_data{idx, 'LPP'});
-    wdata{row, 'recog_mem_delayed'} = mean(word_data{idx, 'old_resp'});
-    wdata{row, 'rk_mem_delayed'} = mean(word_data{idx, 'rk_resp'});
-
-end
-
-%Write data to csv
-writetable(wdata, fullfile(st_dir, 'EmCon_WordAveraged.csv'));
-
-%Turn warnings back on
-warning('on', 'MATLAB:table:RowsAddedExistingVars');
+py_addpath(st_dir);
+py.EmCon_compile_averaged.main();
