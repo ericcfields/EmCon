@@ -1,7 +1,7 @@
 %Get single trial data for EmCon analyses
 %
 %Author: Eric Fields
-%Version Date: 7 March 2024
+%Version Date: 8 March 2024
 
 %% SET-UP
 
@@ -38,6 +38,12 @@ for s = 1:length(subs)
     %Load subject data
     EEG = pop_loadset('filename', [subs{s} '_postart.set'], 'filepath', fullfile(main_dir, 'EEGsets'));
     [ALLEEG, EEG, CURRENTSET] = eeg_store(ALLEEG, EEG, 0);
+
+    %Check baseline
+    baseline_time = [-200, -1];
+    [~, bsln_start] = min(abs(EEG.times - baseline_time(1)));
+    [~, bsln_end] = min(abs(EEG.times - baseline_time(2)));
+    assert(max(max(mean(EEG.data(:, bsln_start:bsln_end, :), 2))) < 1e-4);
 
     %GET PSYCHOPY DATA
     %Find psychopy encoding file
@@ -90,6 +96,13 @@ for s = 1:length(subs)
             data{row, 'valence'} = "NEG";
         elseif first_bin == 3
             data{row, 'valence'} = "animal";
+        end
+
+        %Get accuracy
+        if any(ismember(EEG.epoch(ep).eventbini, [5, 6, 7]))
+            data{row, 'acc'} = 1;
+        else
+            data{row, 'acc'} = 0;
         end
 
         %Get memory condition
@@ -148,6 +161,65 @@ for s = 1:length(subs)
             end
         end
 
+        %Get remember/know condition
+        if data{row, 'old_resp'} == 1
+	        rk_bin = EEG.epoch(ep).eventbini(ismember(EEG.epoch(ep).eventbini, [10, 11, 14, 15, 18, 19, 26, 27, 30, 31, 34, 35]));
+	        assert(length(mem_bin)<=1);
+	        if ~isempty(rk_bin)
+		        switch rk_bin
+			        case 10
+				        assert(strcmp(data{row, 'valence'}, 'NEU'));
+				        assert(data{row, 'delay'} == "immediate");
+				        data{row, 'rk_resp'} = 0;
+			        case 11
+				        assert(strcmp(data{row, 'valence'}, 'NEU'));
+				        assert(data{row, 'delay'} == "immediate");
+				        data{row, 'rk_resp'} = 1;
+			        case 14
+				        assert(strcmp(data{row, 'valence'}, 'NEG'));
+				        assert(data{row, 'delay'} == "immediate");
+				        data{row, 'rk_resp'} = 0;
+			        case 15
+				        assert(strcmp(data{row, 'valence'}, 'NEG'));
+				        assert(data{row, 'delay'} == "immediate");
+				        data{row, 'rk_resp'} = 1;
+			        case 18
+				        assert(strcmp(data{row, 'valence'}, 'animal'));
+				        assert(data{row, 'delay'} == "immediate");
+				        data{row, 'rk_resp'} = 0;
+			        case 19
+				        assert(strcmp(data{row, 'valence'}, 'animal'));
+				        assert(data{row, 'delay'} == "immediate");
+				        data{row, 'rk_resp'} = 1;
+			        case 26
+				        assert(strcmp(data{row, 'valence'}, 'NEU'));
+				        assert(data{row, 'delay'} == "delayed");
+				        data{row, 'rk_resp'} = 0;
+			        case 27
+				        assert(strcmp(data{row, 'valence'}, 'NEU'));
+				        assert(data{row, 'delay'} == "delayed");
+				        data{row, 'rk_resp'} = 1;
+			        case 30
+				        assert(strcmp(data{row, 'valence'}, 'NEG'));
+				        assert(data{row, 'delay'} == "delayed");
+				        data{row, 'rk_resp'} = 0;
+			        case 31
+				        assert(strcmp(data{row, 'valence'}, 'NEG'));
+				        assert(data{row, 'delay'} == "delayed");
+				        data{row, 'rk_resp'} = 1;
+			        case 34
+				        assert(strcmp(data{row, 'valence'}, 'animal'));
+				        assert(data{row, 'delay'} == "delayed");
+				        data{row, 'rk_resp'} = 0;
+			        case 35
+				        assert(strcmp(data{row, 'valence'}, 'animal'));
+				        assert(data{row, 'delay'} == "delayed");
+				        data{row, 'rk_resp'} = 1;
+		        end
+	        end
+        else
+	        data{row, 'rk_resp'} = 0;
+        end
         
         %Get EEG data
         data{row, 'LPP'} = mean(mean(EEG.data(p_chan_idx, p_start_sample:p_end_sample, ep)));
@@ -193,14 +265,18 @@ for wid = unique(data{:, 'word_id'})'
     %Get LPP and recognition memory for immediate
     idx = (word_data.delay == "immediate") & (word_data.art_rej == 0);
     wdata{row, 'N_immediate'} = sum(idx);
+    wdata{row, 'acc_immediate'} = mean(word_data{idx, 'acc'});
     wdata{row, 'LPP_immediate'} = mean(word_data{idx, 'LPP'});
     wdata{row, 'recog_mem_immediate'} = mean(word_data{idx, 'old_resp'});
+    wdata{row, 'rk_mem_immediate'} = mean(word_data{idx, 'rk_resp'});
 
     %Get LPP and recognition memory for delayed
     idx = (word_data.delay == "delayed") & (word_data.art_rej == 0);
     wdata{row, 'N_delayed'} = sum(idx);
+    wdata{row, 'acc_delayed'} = mean(word_data{idx, 'acc'});
     wdata{row, 'LPP_delayed'} = mean(word_data{idx, 'LPP'});
     wdata{row, 'recog_mem_delayed'} = mean(word_data{idx, 'old_resp'});
+    wdata{row, 'rk_mem_delayed'} = mean(word_data{idx, 'rk_resp'});
 
 end
 
