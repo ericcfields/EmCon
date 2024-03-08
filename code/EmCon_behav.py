@@ -3,7 +3,7 @@
 Process behvavioral data for EmCon
 
 Author: Eric Fields
-Version Date: 7 March 2024
+Version Date: 8 March 2024
 
 Copyright (c) 2023, Eric Fields
 All rights reserved.
@@ -102,6 +102,10 @@ def process_sub_behav_data(sub_id, main_dir=None, behav_data=None):
     #Remove dots in column names
     enc_data.columns = [x.replace('.', '_') for x in enc_data.columns]
     
+    #Check list number
+    if enc_data['list'][0] != float(sub_id[:2]):
+        print("WARNING: List number doesn't match subject ID for encoding/n")
+    
     ############## CALCULATE ACC AND RT ##############
     
     #Get just non-practice trial rows
@@ -176,6 +180,10 @@ def process_sub_mem_data(sub_id, mem_data=None, main_dir=None):
     ret1_data.columns = [x.replace('.', '_') for x in ret1_data.columns]
     #Make R/K response column numeric
     ret1_data['rk_resp_keys'] = ret1_data['rk_resp_keys'].replace({'None':np.nan}).astype(float)
+    
+    #Check list number
+    if ret1_data['list'][0] != float(sub_id[:2]):
+        print("WARNING: List number doesn't match subject ID for immediate retrieval/n")
 
     ##### Delayed retrieval #####
     #Find retrieval file
@@ -191,6 +199,10 @@ def process_sub_mem_data(sub_id, mem_data=None, main_dir=None):
         ret2_data.columns = [x.replace('.', '_') for x in ret2_data.columns]
         #Make R/K response column numeric
         ret2_data['rk_resp_keys'] = ret2_data['rk_resp_keys'].replace({'None':np.nan}).astype(float)
+    
+    #Check list number
+    if ret2_data['list'][0] != float(sub_id[:2]):
+        print("WARNING: List number doesn't match subject ID for delayed retrieval/n")
         
     
     ############## CALCULATE MEMORY STATS ##############

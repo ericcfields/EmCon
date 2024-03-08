@@ -1,15 +1,47 @@
 %Artifact rejection script for EmCon
 %
 %AUTHOR: Eric Fields
-%VERSION DATE: 8 March 2024
+%VERSION DATE: 7 March 2024
 
-%Copyright (c) 2024, Eric Fields
+%Copyright (c) 2023, Eric Fields
 %All rights reserved.
 %This code is free and open source software made available under the terms 
 %of the 3-clause BSD license:
 %https://opensource.org/licenses/BSD-3-Clause
 
-%See arf_readme.md for instructions for using this script.
+%%% ICA correction %%%
+
+% 1. Visually inspect ICA components
+% 2. List all ICs to remove from data. For example
+%    ICrej = [2, 4];
+% 3. If one or more of the used ICs represent blinks, make sure 
+%    blink_corr = true;
+
+%For more information on ICA correction see:
+%https://eeglab.org/tutorials/06_RejectArtifacts/RunICA.html
+%Ch. 6 Supplement in Luck (2014). An Introduction to the Event-Related
+%Potential Technique, 2nd ed. MIT Press.
+
+%%% Artifact detection & rejection %%%
+
+%Each routine below has three parameters:
+% 1. A voltage threshold in microvolts
+% 2. The size of the moving window in milliseconds
+% 3. The step bewteen consecutive moving window segments
+
+%After this script runs, visually inspect the data. If artifact rejection is
+%not satisfactory, respond no to save prompt, adjust threshold, and re-run
+%the script. Continue this procedure until you are satistifed, then save
+%the artifact rejection.
+
+%Usually you will adjust voltage thresholds and leave the time window
+%parameters the same
+
+%For more on the detection routines and parameters, see:
+%https://github.com/ucdavis/erplab/wiki/Tutorial-1-EEG-to-ERPset#artifact-detection
+%https://github.com/ucdavis/erplab/wiki/Artifact-Detection-in-Epoched-Data
+%Ch. 6 in Luck (2014). An Introduction to the Event-Related
+%Potential Technique, 2nd ed. MIT Press.
 
 
 %% ************************************************************************
@@ -23,8 +55,8 @@ EEGchans = 1:(num_chans-2);
 art_chan_low_pass = 15;
 
 %Independent components to remove from data (if nonre, ICrej = false)
-ICrej = [];
-blink_corr = false; %true if one or more rejected ICs represent blinks
+ICrej = [1, 4];
+blink_corr = true; %true if one or more rejected ICs represent blinks
 
 %Electrodes to interpolate
 interpolate_electrodes = {};
@@ -48,14 +80,14 @@ step_chans = 1:num_chans;
 
 %Peak to peak amplitude for all channels
 %Flag 4
-ppa_thresh       = 250;
+ppa_thresh       = 400;
 ppa_windowsize   = 200;
 ppa_windowstep   = 25;
 ppa_chans = 1:num_chans;
 
 %Step-based drift detection
 %Flag 5
-drift_thresh     = 40;
+drift_thresh     = 50;
 drift_windowsize = 1000;
 drift_windowstep = 50;
 drift_chans = 1:num_chans;
@@ -64,15 +96,15 @@ drift_chans = 1:num_chans;
 %Flag 6 
 %This should generally be used to remove trials with technical problems, not for artifact
 %Examples:
-% manual_reject = []; %no manual rejections
+% manual_reject = false; %no manual rejections
 % manual_reject = [1, 600]; %manually reject epochs 1 and 600
 % manual_reject = [1, 20:43, 201]; %manually reject epochs, 1, 20 through 43, and 201
-manual_reject = [];
+manual_reject = false;
 
 %Epoch numbers for trials that should be protected from artifact rejection
 %YOU PROBABLY DON'T WANT TO DO THIS!
 %Syntax as above
-manual_unreject = [];
+manual_unreject = false;
 
 
 %DON'T CHANGE ANYTHING BELOW THIS LINE UNLESS YOU KNOW WHAT YOU'RE DOING
@@ -119,7 +151,7 @@ addpath(fullfile('code', 'arf'));
 %% ***** ARTIFACT DETECTION *****
 
 %Check for ICA weights
-if isempty(EEG.icaweights) && ~isempty(ICrej)
+if isempty(EEG.icaweights) && ICrej
     errordlg('EEGset does not have ICA weights!');
 end
 
@@ -140,7 +172,7 @@ EEG = pop_basicfilter(EEG, blink_chan, 'Cutoff',  art_chan_low_pass, 'Design', '
 assert(abs(mean(EEG.data(:))) < 0.1);
 
 %Remove ICs
-if ~isempty(ICrej)
+if ICrej
     EEG = pop_subcomp(EEG, ICrej, double(~batch_proc));
     EEG.setname = strrep(EEG.setname, ' pruned with ICA', '_ICAcorr');
     [ALLEEG, EEG, CURRENTSET] = eeg_store(ALLEEG, EEG, CURRENTSET);
@@ -162,10 +194,10 @@ EEG = pop_rmbase(EEG, baseline_time);
 
 %Prepare variables for filter thresholds table
 clearvars -global outmwppth; clearvars -global outstepth; clearvars -global thresholds;
-global outmwppth;   %#ok<GVMIS,NUSED> %threshold values output by pop_artmwppth
-global outstepth;   %#ok<GVMIS,NUSED> %threshold values output by pop_artstep
-global outflat;     %#ok<GVMIS,NUSED> %threshold values output by pop_artflatline
-global chanlabels; %#ok<GVMIS>
+global outmwppth;   %#ok<NUSED> %threshold values output by pop_artmwppth
+global outstepth;   %#ok<NUSED> %threshold values output by pop_artstep
+global outflat;     %#ok<NUSED> %threshold values output by pop_artflatline
+global chanlabels;
 chanlabels = {EEG.chanlocs.labels};
 
 %Blink detection
@@ -198,8 +230,8 @@ EEG  = NCL_pop_artstep(EEG, 'Channel', drift_chans, 'Flag', [1, 5], 'Threshold',
 plotthresh.addFilter('Name','Drift','Channels',drift_chans,'Type','NCL_pop_artstep','Threshold',drift_thresh);
 
 %Manual rejection
-if ~isempty(manual_reject)
-    fprintf('Manually rejecting epochs');
+if manual_reject
+    fprintf('Manually rejecting epochs'); %#ok<UNRCH>
     disp(manual_reject);
     fprintf('\n');
     EEG.reject.rejmanual(manual_reject) = 1;
@@ -212,7 +244,7 @@ end
 
 %Manual unrejection
 %BE CAREFUL!
-if exist('manual_unreject', 'var') && ~isempty(manual_unreject)
+if exist('manual_unreject', 'var') && manual_unreject
     fprintf('\n\n**********************************************************\n')
     fprintf('Manually UNrejecting epochs');
     disp(manual_unreject)
