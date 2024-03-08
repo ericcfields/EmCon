@@ -184,19 +184,19 @@ for wid = unique(data{:, 'word_id'})'
     %Check for consistency of word and valence
     assert(height(unique(word_data.word)) == 1);
     assert(height(unique(word_data.valence)) == 1);
-    
+
     %Add word id, word, and valence
     wdata{row, 'word_id'} = wid;
     wdata{row, 'word'} = string(word_data{1, 'word'}{1});
     wdata{row, 'valence'} = string(word_data{1, 'valence'}{1});
 
-    %Get memory rate and LPP for immediate trials
+    %Get LPP and recognition memory for immediate
     idx = (word_data.delay == "immediate") & (word_data.art_rej == 0);
     wdata{row, 'N_immediate'} = sum(idx);
     wdata{row, 'LPP_immediate'} = mean(word_data{idx, 'LPP'});
     wdata{row, 'recog_mem_immediate'} = mean(word_data{idx, 'old_resp'});
 
-    %Get memory rate and LPP for delayed trials
+    %Get LPP and recognition memory for delayed
     idx = (word_data.delay == "delayed") & (word_data.art_rej == 0);
     wdata{row, 'N_delayed'} = sum(idx);
     wdata{row, 'LPP_delayed'} = mean(word_data{idx, 'LPP'});
