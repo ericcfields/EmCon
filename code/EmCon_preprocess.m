@@ -36,7 +36,7 @@ warning('on');
 EmCon_preproc_params;
 
 %String, cell array, or text file giving IDs of subjects to process
-subject_ids = get_subset('raw', [], main_dir);
+%subject_ids = get_subset('preart', [], main_dir);
 
 
 %% ***** SET-UP *****
