@@ -1,6 +1,6 @@
 # EmCon
 
-Last updated: 5 March 2024
+Last updated: 8 March 2024
 
 **Summary**
 
@@ -77,10 +77,17 @@ Code was developed and tested in MATLAB 2023a, EEGLAB 2023.1, ERPLAB 10.04, Pyth
 **IV. Averaging**
 
 11. After saving artifact correction/rejection, you will be asked whether you want to calculate ERPs. If you want/need to calculate ERPs at a later time, run `EmCon_make_erp`.
+12. A grand average ERP is produced by `EmCon_make_gm.m`.
 
 
 
 
 ### Statistical Analysis
 
-TBD
+Code for and results of statistical analysis can be found in the "stats" folder.  
+
+* Analysis of behavioral memory data is contained in `EmCon_memory_analyses.R`. This script conducts a Valence X Delay ANOVA plus interaction follow-ups for all behavioral memory variables. Summary descriptive and inferential output tables are produced along with separate .csv with full results of all analyses.
+* Mass univariate analysis of ERP data are run by `EmCon_makeGND.m` and `EmCon_mass_uni_analyses`.
+* Single trial, word averaged, and subject averaged ERP data are produced by `EmCon_SingleTrial.m` and `EmCon_compile_averaged.py`.
+
+Additional analyses and details TBD.

@@ -75,39 +75,31 @@ get_int_followup <- function(data) {
 
   ph_table <- data.frame()
   
-  #Calcualte pooled standard deviation (across all four conditions)
+  #Calculate pooled standard deviation (across all four conditions)
   desc_stats <- data %>% group_by(valence, delay) %>% get_summary_stats(all_of(DV), type = "mean_sd")
   sp = sqrt(mean(desc_stats$sd^2))
   
-  #Get index for condition subsets
-  NEU_I_idx <- (data$valence == "NEU") & (data$delay == "I")
-  NEU_D_idx <- (data$valence == "NEU") & (data$delay == "D")
-  NEG_I_idx <- (data$valence == "NEG") & (data$delay == "I")
-  NEG_D_idx <- (data$valence == "NEG") & (data$delay == "D")
+  #Define contrasts to be calculated
+  contrsts <- list("I: NEG - NEU" = c("NEG", "NEU", "I", "I"),
+                   "D: NEG - NEU" = c("NEG", "NEU", "D", "D"),
+                   "NEU: I - D" =   c("NEU", "NEU", "I", "D"),
+                   "NEG: I - D" =   c("NEG", "NEG", "I", "D"))
   
-  #Valence within immediate
-  t_results <- t.test(data[NEG_I_idx, ][[DV]], data[NEU_I_idx,][[DV]], paired=TRUE)
-  d <- as.numeric(t_results$estimate) / sp
-  ph_table["I: NEG - NEU", "d"] <- d
-  ph_table["I: NEG - NEU", "p"] <- as.numeric(t_results$p.value)
-  
-  #Valence within delayed
-  t_results <- t.test(data[NEG_D_idx, ][[DV]], data[NEU_D_idx,][[DV]], paired=TRUE)
-  d <- as.numeric(t_results$estimate) / sp
-  ph_table["D: NEG - NEU", "d"] <- d
-  ph_table["D: NEG - NEU", "p"] <- as.numeric(t_results$p.value)
-  
-  #Delay within neutral
-  t_results <- t.test(data[NEU_I_idx, ][[DV]], data[NEU_D_idx,][[DV]], paired=TRUE)
-  d <- as.numeric(t_results$estimate) / sp
-  ph_table["NEU: I - D", "d"] <- d
-  ph_table["NEU: I - D", "p"] <- as.numeric(t_results$p.value)
-  
-  #Delay within negative
-  t_results <- t.test(data[NEG_I_idx, ][[DV]], data[NEG_D_idx,][[DV]], paired=TRUE)
-  d <- as.numeric(t_results$estimate) / sp
-  ph_table["NEG: I - D", "d"] <- d
-  ph_table["NEG: I - D", "p"] <- as.numeric(t_results$p.value)
+  #Calculate statistics for all contrasts
+  for (i in 1:length(contrsts)) {
+    row <- names(contrsts[i])
+    idx_1 <- (data$valence == contrsts[[row]][1]) & (data$delay == contrsts[[row]][3])
+    idx_2 <- (data$valence == contrsts[[row]][2]) & (data$delay == contrsts[[row]][4])
+    t_results <- t.test(data[idx_1, ][[DV]], data[idx_2,][[DV]], paired=TRUE)
+    d <- as.numeric(t_results$estimate) / sp
+    ph_table[row, "t"] <- as.numeric(t_results$statistic)
+    ph_table[row, "df"] <- as.numeric(t_results$parameter)
+    ph_table[row, "p"] <- as.numeric(t_results$p.value)
+    ph_table[row, "mean_diff"] <- as.numeric(t_results$estimate)
+    ph_table[row, "CI_L"] <- as.numeric(t_results$conf.int[1])
+    ph_table[row, "CI_U"] <- as.numeric(t_results$conf.int[2])
+    ph_table[row, "d"] <- d
+  }
   
   return(ph_table)
   
@@ -156,7 +148,7 @@ for (DV in DVs) {
   }
 }
 
-write.csv(desc_table, "EmCon_memory_descriptives.csv")
+write.csv(desc_table, "results/EmCon_memory_descriptives.csv")
 
 
 ############################# VALENCE X DELAY ANOVA #############################
@@ -168,9 +160,11 @@ for (DV in DVs) {
   anova_result <- anova_test(data, dv=all_of(DV), wid=sub_id, within=c(valence, delay))
   anova_table <- get_anova_table(anova_result)
   anova_table <- add_cohens_d(data, ANOVA_table)
+  write.csv(anova_table, sprintf("results/full/EmCon_%s_ANOVA.csv", DV), row.names=FALSE)
   
   #Calculate interaction follow-ups
   ph_table <- get_int_followup(data)
+  write.csv(ph_table, sprintf("results/full/EmCon_%s_int_posthoc.csv", DV))
   
   #Add results to full results table
   all_results[DV, "val_d"] <- anova_table[anova_table$Effect=="valence", "d"]
@@ -190,4 +184,4 @@ for (DV in DVs) {
   
 }
 
-write.csv(all_results, "EmCon_memory_ANOVA_results.csv")
+write.csv(all_results, "results/EmCon_memory_ANOVA_results.csv")
