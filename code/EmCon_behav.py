@@ -3,7 +3,7 @@
 Process behvavioral data for EmCon
 
 Author: Eric Fields
-Version Date: 8 March 2024
+Version Date: 9 March 2024
 
 Copyright (c) 2023, Eric Fields
 All rights reserved.
@@ -232,7 +232,17 @@ def process_sub_mem_data(sub_id, mem_data=None, main_dir=None):
                                           'ALL_I_K_FARate', 'NEU_I_K_FARate', 'NEG_I_K_FARate', 'animal_I_K_FARate',
                                           'ALL_D_K_FARate', 'NEU_D_K_FARate', 'NEG_D_K_FARate', 'animal_D_K_FARate',
                                           'ALL_I_R_FARate', 'NEU_I_R_FARate', 'NEG_I_R_FARate', 'animal_I_R_FARate',
-                                          'ALL_D_R_FARate', 'NEU_D_R_FARate', 'NEG_D_R_FARate', 'animal_D_R_FARate'])
+                                          'ALL_D_R_FARate', 'NEU_D_R_FARate', 'NEG_D_R_FARate', 'animal_D_R_FARate',
+                                          'ALL_I_R_dprime', 'NEU_I_R_dprime', 'NEG_I_R_dprime', 'animal_I_R_dprime',
+                                          'ALL_D_R_dprime', 'NEU_D_R_dprime', 'NEG_D_R_dprime', 'animal_D_R_dprime',
+                                          'ALL_I_R_Az', 'NEU_I_R_Az', 'NEG_I_R_Az', 'animal_I_R_Az',
+                                          'ALL_D_R_Az', 'NEU_D_R_Az', 'NEG_D_R_Az', 'animal_D_R_Az',
+                                          'ALL_I_R_criterion', 'NEU_I_R_criterion', 'NEG_I_R_criterion', 'animal_I_R_criterion',
+                                          'ALL_D_R_criterion', 'NEU_D_R_criterion', 'NEG_D_R_criterion', 'animal_D_R_criterion',
+                                          'ALL_I_R_A', 'NEU_I_R_A', 'NEG_I_R_A', 'animal_I_R_A',
+                                          'ALL_D_R_A', 'NEU_D_R_A', 'NEG_D_R_A', 'animal_D_R_A',
+                                          'ALL_I_R_B', 'NEU_I_R_B', 'NEG_I_R_B', 'animal_I_R_B',
+                                          'ALL_D_R_B', 'NEU_D_R_B', 'NEG_D_R_B', 'animal_D_R_B'])
     
     for mem_test in ['I', 'D']:
         for val_cond in ['ALL', 'NEU', 'NEG', 'animal']:
@@ -265,11 +275,15 @@ def process_sub_mem_data(sub_id, mem_data=None, main_dir=None):
             R_hits = sum((ret_data.loc[cond_idx, 'mem_cond'] == 'Old')&
                         (ret_data.loc[cond_idx, 'rk_resp_keys'] == 5))
             assert hits == K_hits + R_hits
+            R_misses = K_hits + misses
+            assert (R_hits + R_misses) == (hits + misses)
             K_FA = sum((ret_data.loc[cond_idx, 'mem_cond'] == 'New') &
                        (ret_data.loc[cond_idx, 'rk_resp_keys'] == 4))
             R_FA = sum((ret_data.loc[cond_idx, 'mem_cond'] == 'New') &
                        (ret_data.loc[cond_idx, 'rk_resp_keys'] == 5))
             assert FA == K_FA + R_FA
+            R_CR = CR + K_FA
+            assert (R_CR + R_FA) == (CR + FA)
             
             #Trial numbers
             if val_cond != 'ALL':
@@ -293,6 +307,15 @@ def process_sub_mem_data(sub_id, mem_data=None, main_dir=None):
             mem_data.at[sub_id, '%s_%s_%s' % (val_cond, mem_test, 'R_HitRate')] = R_hits / (hits + misses)
             mem_data.at[sub_id, '%s_%s_%s' % (val_cond, mem_test, 'K_FARate')] = K_FA / (FA + CR)
             mem_data.at[sub_id, '%s_%s_%s' % (val_cond, mem_test, 'R_FARate')] = R_FA / (FA + CR)
+            
+            #R vs. Not R signal detection measures
+            R_SD_meas = SDT(R_hits, R_misses, R_FA, R_CR)
+            mem_data.at[sub_id, '%s_%s_%s' % (val_cond, mem_test, 'R_dprime')] = R_SD_meas['dprime']
+            mem_data.at[sub_id, '%s_%s_%s' % (val_cond, mem_test, 'R_Az')] = R_SD_meas['Az']
+            mem_data.at[sub_id, '%s_%s_%s' % (val_cond, mem_test, 'R_criterion')] = R_SD_meas['c']
+            mem_data.at[sub_id, '%s_%s_%s' % (val_cond, mem_test, 'R_A')] = R_SD_meas['A']
+            mem_data.at[sub_id, '%s_%s_%s' % (val_cond, mem_test, 'R_B')] = R_SD_meas['B']
+            
     
     return mem_data
 

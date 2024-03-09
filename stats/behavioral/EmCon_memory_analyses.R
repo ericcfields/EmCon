@@ -129,7 +129,7 @@ data$delay <- factor(data$delay)
 contrasts(data$delay) <- contr.simple(nlevels(data$delay))
 
 #Which columns represent dependent variables for analysis
-DVs <- colnames(data)[4:14]
+DVs <- colnames(data)[4:19]
 
 
 ############################# DESCRIPTIVE STATISTICS #############################
