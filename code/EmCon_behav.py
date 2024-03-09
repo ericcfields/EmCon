@@ -303,7 +303,7 @@ def process_sub(sub_id, main_dir=None, behav_data=None, mem_data=None, save_file
     """
     
     #Encoding
-    behav_summary = join(main_dir, 'stats', 'behavioral', 'EmCon_EncBehav_summary.csv')
+    behav_summary = join(main_dir, 'stats', 'behavioral', 'EmCon_EncBehav_wide.csv')
     if behav_data is None:
         if os.path.exists(behav_summary):
             behav_data = pd.read_csv(behav_summary, index_col='sub_id')
@@ -314,7 +314,7 @@ def process_sub(sub_id, main_dir=None, behav_data=None, mem_data=None, save_file
         behav_data.to_csv(behav_summary, index_label='sub_id')
     
     #Retrieval
-    mem_summary = join(main_dir, 'stats', 'behavioral', 'EmCon_Memory_summary.csv')
+    mem_summary = join(main_dir, 'stats', 'behavioral', 'EmCon_memory_wide.csv')
     if mem_data is None:
         if os.path.exists(mem_summary):
             mem_data = pd.read_csv(mem_summary, index_col='sub_id')
@@ -364,6 +364,26 @@ def process_all(main_dir=None):
     return (behav_data, mem_data)
 
 
+def wide2long(mem_data):
+    
+    dvs = [x[6:] for x in mem_data.columns if 'ALL_I' in x]
+    
+    wdata = pd.DataFrame()
+    
+    row = -1
+    for sub_id in mem_data.index:
+        for val in ['NEU', 'NEG', 'animal']:
+            for dly in ['I', 'D']:
+                row += 1
+                wdata.loc[row, 'sub_id'] = sub_id
+                wdata.loc[row, 'valence'] = val
+                wdata.loc[row, 'delay'] = dly
+                for dv in dvs:
+                    wdata.loc[row, dv] = mem_data.loc[sub_id, '%s_%s_%s' % (val, dly, dv)]
+    
+    return wdata
+
+
 def main():
     
     main_dir = r'C:\Users\fieldsec\OneDrive - Westminster College\Documents\ECF\Research\EmCon\DATA'
@@ -374,6 +394,11 @@ def main():
         (behav_data, mem_data) = process_all(main_dir)
     else:
         (behav_data, mem_data) = process_sub(sub_id, main_dir)
+        
+    #Create and save wide format memory data
+    mem_data_long = wide2long(mem_data)
+    mem_data_long.to_csv(join(main_dir, 'stats', 'behavioral', 'EmCon_memory_long.csv'),
+                         index=False)
 
 
 if __name__ == '__main__':
