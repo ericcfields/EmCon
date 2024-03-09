@@ -7,12 +7,19 @@
 #All rights reserved.
 #This code is free and open source software made available under the 3-clause BSD license.
 
-
+library(moments)
 library(readr)
 library(rstatix)
 library(dplyr)
 library(tidyr)
 library(tidyselect)
+
+#Load Wilcox robust functions
+#Wilcox, R. R. (2016). Introduction to Robust Estimation and Hypothesis Testing (4th ed.). Waltham, MA: Elsevier.
+#https://dornsife.usc.edu/labs/rwilcox/software/
+if (!exists("yuen")) {
+  source("C:/Users/fieldsec/OneDrive - Westminster College/Documents/ECF/Coding/R/Rallfun-v43.txt")
+}
 
 setwd("C:/Users/fieldsec/OneDrive - Westminster College/Documents/ECF/Research/EmCon/DATA/stats/behavioral")
 
@@ -72,9 +79,36 @@ data$delay <- factor(data$delay)
 contrasts(data$delay) <- contr.simple(nlevels(data$delay))
 
 
-################################### Valence x Delay Models ###################################
+############################# DESCRIPTIVE STATISTICS #############################
 
 DVs <- colnames(data)[4:14]
+
+desc_table <- data.frame()
+for (DV in DVs) {
+  for (val in c("NEU", "NEG")) {
+    for (dly in c("I", "D")) {
+      dat <- data[data$valence==val & data$delay==dly, ][[DV]]
+      rowname <- sprintf("%s: %s %s", DV, val, dly)
+      desc_table[rowname, "M"] <- mean(dat)
+      desc_table[rowname, "SD"] <- sd(dat)
+      desc_table[rowname, "skew"] <- skewness(dat)
+      desc_table[rowname, "kurtosis"] <- kurtosis(dat) - 3
+      desc_table[rowname, "min"] <- min(dat)
+      desc_table[rowname, "25th"] <- quantile(dat, .25)
+      desc_table[rowname, "median"] <- median(dat)
+      desc_table[rowname, "75th"] <- quantile(dat, .75)
+      desc_table[rowname, "max"] <- max(dat)
+      desc_table[rowname, "trim_mean"] <- mean(dat, trim=0.2)
+      desc_table[rowname, "sw"] <- winsd(dat,tr=0.2)
+      desc_table[rowname, "MAD"] <- mad(dat)
+    }
+  }
+}
+
+write.csv(desc_table, "EmCon_memory_descriptives.csv")
+
+
+############################# VALENCE X DELAY ANOVA #############################
 
 all_results <- data.frame()
 for (DV in DVs) {
@@ -94,4 +128,4 @@ for (DV in DVs) {
   
 }
 
-write.csv(all_results, "EmCon_memory_results.csv")
+write.csv(all_results, "EmCon_memory_ANOVA_results.csv")
