@@ -1,23 +1,18 @@
 #Analysis of behavioral memory variables for EmCon
 #
 #Author: Eric Fields
-#Version Date: 8 March 2024
+#Version Date: 9 March 2024
 
 #Copyright (c) 2021, Eric Fields
 #All rights reserved.
 #This code is free and open source software made available under the 3-clause BSD license.
 
-library(stringr)
+
 library(readr)
-library(tibble)
-library(tidyr)
+library(rstatix)
 library(dplyr)
-library(lme4)
-library(afex)
-library(car)
-library(emmeans)
-library(performance)
-library(ggplot2)
+library(tidyr)
+library(tidyselect)
 
 setwd("C:/Users/fieldsec/OneDrive - Westminster College/Documents/ECF/Research/EmCon/DATA/stats/behavioral")
 
@@ -33,26 +28,31 @@ contr.simple <- function(n_levels) {
   return(c)
 }
 
-make_lmer_table <- function(m, ci_method="Wald", alpha=0.05) {
-  #Create more readable table of lmer results
+add_cohens_d <- function(data, anova_results) {
+
+  desc_stats <- data %>% group_by(valence, delay) %>% get_summary_stats(all_of(DV), type = "mean_sd")
+  sp = sqrt(mean(desc_stats$sd^2))
   
-  #Get relevant stats
-  coeff_table <- summary(m)$coefficients
-  ci_table <- confint.merMod(m, method=ci_method, level=1-alpha)
+  M_NEU <- mean(desc_stats[desc_stats$valence=="NEU", ]$mean)
+  M_NEG <- mean(desc_stats[desc_stats$valence=="NEG", ]$mean)
+  anova_table[anova_table$Effect == "valence", "d"] = (M_NEG - M_NEU) / sp
   
-  #Create results table from these stats
-  res_table <- data.frame()
-  res_table["intercept", colnames(coeff_table)] <- coeff_table["(Intercept)",]
-  res_table["intercept", colnames(ci_table)] <- ci_table["(Intercept)",]
-  for (pred_name in rownames(coeff_table)[-1]) {
-    res_table[pred_name, colnames(coeff_table)] <- coeff_table[pred_name,]
-    res_table[pred_name, colnames(ci_table)] <- ci_table[pred_name,]
+  M_I <- mean(desc_stats[desc_stats$delay=="I", ]$mean)
+  M_D <- mean(desc_stats[desc_stats$delay=="D", ]$mean)
+  anova_table[anova_table$Effect == "delay", "d"] = (M_D - M_I) / sp
+  
+  if (!all(desc_stats$valence == c("NEG", "NEG", "NEU", "NEU"))) {
+    stop("Column order is not as expected.")
+  }
+  if (!all(desc_stats$delay == c("D", "I", "D", "I"))) {
+    stop("Column order is not as expected.")
   }
   
-  #More usable column names
-  colnames(res_table) <- c("estimate", "se", "df", "t", "pvalue", "CI_L", "CI_U")
+  int_numerator <- ((desc_stats[1, "mean"] - desc_stats[3, "mean"]) -
+                      (desc_stats[2, "mean"] - desc_stats[4, "mean"]))
+  anova_table[anova_table$Effect == "valence:delay", "d"] = int_numerator / sp
   
-  return(res_table)
+  return(anova_table)
   
 }
 
@@ -72,51 +72,25 @@ data$delay <- factor(data$delay)
 contrasts(data$delay) <- contr.simple(nlevels(data$delay))
 
 
-################################### SET-UP ###################################
+################################### Valence x Delay Models ###################################
 
 DVs <- colnames(data)[4:14]
-
-anova_test_method <- "F"
-ci_method <- "profile"
-
-################################### Valence x Delay Models ###################################
 
 all_results <- data.frame()
 for (DV in DVs) {
   
-  #Model formula
-  f <- as.formula(sprintf("%s ~ 1 + valence*delay + (1 + valence + delay | sub_id)", DV))
+  anova_result <- anova_test(data, dv=all_of(DV), wid=sub_id, within=c(valence, delay))
+  anova_table <- get_anova_table(anova_result)
+  anova_table <- add_cohens_d(data, ANOVA_table)
   
-  #Estimate lmer model
-  cat(sprintf("\nEstimating model for %s\n", DV))
-  m <- lmer_alt(f, data=data,
-                expand_re=TRUE, 
-                REML=TRUE,
-                type=3,
-                method="KR",
-                check_contrasts=FALSE,
-                test_intercept=TRUE,
-                all_fit=TRUE)
+  all_results[DV, "val_d"] <- anova_table[anova_table$Effect=="valence", "d"]
+  all_results[DV, "val_p"] <- anova_table[anova_table$Effect=="valence", "p"]
   
-  res_table <- make_lmer_table(m, ci_method=ci_method)
+  all_results[DV, "delay_d"] <- anova_table[anova_table$Effect=="delay", "d"]
+  all_results[DV, "delay_p"] <- anova_table[anova_table$Effect=="delay", "p"]
   
-  #Add Cohen's d
-  s <- sqrt(sum(as.data.frame(VarCorr(m))$vcov))
-  for (row in rownames(res_table)[-1]) {
-    res_table[row, "d"] <- res_table[row, "estimate"] / s
-  }
-  
-  #Update all results table
-  all_results[DV, "intercept"] <- res_table["intercept", "estimate"]
-  all_results[DV, "val_b"] <- res_table["valence2", "estimate"]
-  all_results[DV, "val_d"] <- res_table["valence2", "d"]
-  all_results[DV, "val_p"] <- res_table["valence2", "pvalue"]
-  all_results[DV, "delay_b"] <- res_table["delay2", "estimate"]
-  all_results[DV, "delay_d"] <- res_table["delay2", "d"]
-  all_results[DV, "delay_p"] <- res_table["delay2", "pvalue"]
-  all_results[DV, "interaction_b"] <- res_table["valence2:delay2", "estimate"]
-  all_results[DV, "interaction_d"] <- res_table["valence2:delay2", "d"]
-  all_results[DV, "interaction_p"] <- res_table["valence2:delay2", "pvalue"]
+  all_results[DV, "int_d"] <- anova_table[anova_table$Effect=="valence:delay", "d"]
+  all_results[DV, "int_p"] <- anova_table[anova_table$Effect=="valence:delay", "p"]
   
 }
 
