@@ -36,30 +36,80 @@ contr.simple <- function(n_levels) {
 }
 
 add_cohens_d <- function(data, anova_results) {
-
+  
+  #Get means and SDs
   desc_stats <- data %>% group_by(valence, delay) %>% get_summary_stats(all_of(DV), type = "mean_sd")
+  
+  #Calculate pooled standard deviation (across all four conditions)
   sp = sqrt(mean(desc_stats$sd^2))
   
+  #Main effect of valence: Get means and calculate Cohen's d
   M_NEU <- mean(desc_stats[desc_stats$valence=="NEU", ]$mean)
   M_NEG <- mean(desc_stats[desc_stats$valence=="NEG", ]$mean)
   anova_table[anova_table$Effect == "valence", "d"] = (M_NEG - M_NEU) / sp
   
+  #Main effect of delaye: Get means and calculate Cohen's d
   M_I <- mean(desc_stats[desc_stats$delay=="I", ]$mean)
   M_D <- mean(desc_stats[desc_stats$delay=="D", ]$mean)
   anova_table[anova_table$Effect == "delay", "d"] = (M_D - M_I) / sp
   
+  #Make sure rows in the descriptives table are as expected
   if (!all(desc_stats$valence == c("NEG", "NEG", "NEU", "NEU"))) {
-    stop("Column order is not as expected.")
+    stop("Row order is not as expected.")
   }
   if (!all(desc_stats$delay == c("D", "I", "D", "I"))) {
-    stop("Column order is not as expected.")
+    stop("Row order is not as expected.")
   }
   
+  #Calculate Cohen's d for interaction:
+  #Difference in valence effect (NEG - NEU) for delayed - immediate
   int_numerator <- ((desc_stats[1, "mean"] - desc_stats[3, "mean"]) -
                       (desc_stats[2, "mean"] - desc_stats[4, "mean"]))
   anova_table[anova_table$Effect == "valence:delay", "d"] = int_numerator / sp
   
   return(anova_table)
+  
+}
+
+get_int_followup <- function(data) {
+
+  ph_table <- data.frame()
+  
+  #Calcualte pooled standard deviation (across all four conditions)
+  desc_stats <- data %>% group_by(valence, delay) %>% get_summary_stats(all_of(DV), type = "mean_sd")
+  sp = sqrt(mean(desc_stats$sd^2))
+  
+  #Get index for condition subsets
+  NEU_I_idx <- (data$valence == "NEU") & (data$delay == "I")
+  NEU_D_idx <- (data$valence == "NEU") & (data$delay == "D")
+  NEG_I_idx <- (data$valence == "NEG") & (data$delay == "I")
+  NEG_D_idx <- (data$valence == "NEG") & (data$delay == "D")
+  
+  #Valence within immediate
+  t_results <- t.test(data[NEG_I_idx, ][[DV]], data[NEU_I_idx,][[DV]], paired=TRUE)
+  d <- as.numeric(t_results$estimate) / sp
+  ph_table["I: NEG - NEU", "d"] <- d
+  ph_table["I: NEG - NEU", "p"] <- as.numeric(t_results$p.value)
+  
+  #Valence within delayed
+  t_results <- t.test(data[NEG_D_idx, ][[DV]], data[NEU_D_idx,][[DV]], paired=TRUE)
+  d <- as.numeric(t_results$estimate) / sp
+  ph_table["D: NEG - NEU", "d"] <- d
+  ph_table["D: NEG - NEU", "p"] <- as.numeric(t_results$p.value)
+  
+  #Delay within neutral
+  t_results <- t.test(data[NEU_I_idx, ][[DV]], data[NEU_D_idx,][[DV]], paired=TRUE)
+  d <- as.numeric(t_results$estimate) / sp
+  ph_table["NEU: I - D", "d"] <- d
+  ph_table["NEU: I - D", "p"] <- as.numeric(t_results$p.value)
+  
+  #Delay within negative
+  t_results <- t.test(data[NEG_I_idx, ][[DV]], data[NEG_D_idx,][[DV]], paired=TRUE)
+  d <- as.numeric(t_results$estimate) / sp
+  ph_table["NEG: I - D", "d"] <- d
+  ph_table["NEG: I - D", "p"] <- as.numeric(t_results$p.value)
+  
+  return(ph_table)
   
 }
 
@@ -78,10 +128,11 @@ contrasts(data$valence) <- contr.simple(nlevels(data$valence))
 data$delay <- factor(data$delay)
 contrasts(data$delay) <- contr.simple(nlevels(data$delay))
 
+#Which columns represent dependent variables for analysis
+DVs <- colnames(data)[4:14]
+
 
 ############################# DESCRIPTIVE STATISTICS #############################
-
-DVs <- colnames(data)[4:14]
 
 desc_table <- data.frame()
 for (DV in DVs) {
@@ -113,18 +164,29 @@ write.csv(desc_table, "EmCon_memory_descriptives.csv")
 all_results <- data.frame()
 for (DV in DVs) {
   
+  #Calculate ANOVA
   anova_result <- anova_test(data, dv=all_of(DV), wid=sub_id, within=c(valence, delay))
   anova_table <- get_anova_table(anova_result)
   anova_table <- add_cohens_d(data, ANOVA_table)
   
+  #Calculate interaction follow-ups
+  ph_table <- get_int_followup(data)
+  
+  #Add results to full results table
   all_results[DV, "val_d"] <- anova_table[anova_table$Effect=="valence", "d"]
   all_results[DV, "val_p"] <- anova_table[anova_table$Effect=="valence", "p"]
-  
   all_results[DV, "delay_d"] <- anova_table[anova_table$Effect=="delay", "d"]
   all_results[DV, "delay_p"] <- anova_table[anova_table$Effect=="delay", "p"]
-  
   all_results[DV, "int_d"] <- anova_table[anova_table$Effect=="valence:delay", "d"]
   all_results[DV, "int_p"] <- anova_table[anova_table$Effect=="valence:delay", "p"]
+  all_results[DV, "Imm_NEG-NEU_d"] <- ph_table["I: NEG - NEU", "d"]
+  all_results[DV, "Imm_NEG-NEU_p"] <- ph_table["I: NEG - NEU", "p"]
+  all_results[DV, "Del_NEG-NEU_d"] <- ph_table["D: NEG - NEU", "d"]
+  all_results[DV, "Del_NEG-NEU_p"] <- ph_table["D: NEG - NEU", "p"]
+  all_results[DV, "NEU_I-D_d"] <- ph_table["NEU: I - D", "d"]
+  all_results[DV, "NEU_I-D_p"] <- ph_table["NEU: I - D", "p"]
+  all_results[DV, "NEG_I-D_d"] <- ph_table["NEG: I - D", "d"]
+  all_results[DV, "NEG_I-D_p"] <- ph_table["NEG: I - D", "p"]
   
 }
 
