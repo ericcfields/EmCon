@@ -28,6 +28,7 @@ ERPsets/*
 psychopy/*
 *__pycache__*
 code/old/*
+stats/**/results/*
 
 ### File subsets in folder to ignore ###
 stats/**/*.csv
