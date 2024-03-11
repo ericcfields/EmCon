@@ -7,7 +7,7 @@
 
 clearvars; close all;
 
-main_dir = EmCon_main_dir();
+main_dir = 'C:\Users\fieldsec\OneDrive - Westminster College\Documents\ECF\Research\EmCon\DATA';
 st_dir = fullfile(main_dir, 'stats', 'erp', 'avg');
 
 addpath(fullfile(main_dir, 'code'));

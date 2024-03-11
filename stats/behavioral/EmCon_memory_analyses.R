@@ -114,7 +114,7 @@ get_int_followup <- function(data) {
 #Get list of usable subjects
 use_codes <- c("YES", "PROBABLY", "MAYBE")
 data_log <- read_excel(file.path(main_dir, "EmCon_EEG_DataLog.xlsx"))
-use_subs <- data_log[data_log[["Use data?"]] %in% use_codes, ][["Sub ID"]]
+use_subs <- data_log[data_log[["Usable"]] %in% use_codes, ][["Sub_ID"]]
 
 #Import data
 data <- read_csv("EmCon_memory_long.csv")
