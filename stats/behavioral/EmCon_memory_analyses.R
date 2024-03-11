@@ -1,12 +1,13 @@
 #Analysis of behavioral memory variables for EmCon
 #
 #Author: Eric Fields
-#Version Date: 9 March 2024
+#Version Date: 10 March 2024
 
 #Copyright (c) 2021, Eric Fields
 #All rights reserved.
 #This code is free and open source software made available under the 3-clause BSD license.
 
+library(readxl)
 library(moments)
 library(readr)
 library(rstatix)
@@ -21,7 +22,9 @@ if (!exists("yuen")) {
   source("C:/Users/fieldsec/OneDrive - Westminster College/Documents/ECF/Coding/R/Rallfun-v43.txt")
 }
 
-setwd("C:/Users/fieldsec/OneDrive - Westminster College/Documents/ECF/Research/EmCon/DATA/stats/behavioral")
+main_dir <- "C:/Users/fieldsec/OneDrive - Westminster College/Documents/ECF/Research/EmCon/DATA"
+
+setwd(file.path(main_dir, "stats", "behavioral"))
 
 #Set default contrast to deviation coding
 options(contrasts = rep("contr.sum", 2))
@@ -108,17 +111,27 @@ get_int_followup <- function(data) {
 
 ################################### IMPORT DATA ###################################
 
+#Get list of usable subjects
+use_codes <- c("YES", "PROBABLY", "MAYBE")
+data_log <- read_excel(file.path(main_dir, "EmCon_EEG_DataLog.xlsx"))
+use_subs <- data_log[data_log[["Use data?"]] %in% use_codes, ][["Sub ID"]]
+
 #Import data
 data <- read_csv("EmCon_memory_long.csv")
 
 #Get only neutral and negative conditions
 data <- data[data$valence!="animal", ]
 
+#Get only usable subjects
+data <- data[data$sub_id %in% use_subs, ]
+
 #Set factors and contrast schemes
 data$valence <- factor(data$valence)
 contrasts(data$valence) <- contr.simple(nlevels(data$valence))
 data$delay <- factor(data$delay)
 contrasts(data$delay) <- contr.simple(nlevels(data$delay))
+
+
 
 #Which columns represent dependent variables for analysis
 DVs <- colnames(data)[4:19]
