@@ -1,7 +1,7 @@
 #Run analyses to test if the LPP mediates the effect of emotion on memory
 #
 #Author: Eric Fields
-#Version Date: 10 March 2024
+#Version Date: 12 March 2024
 
 library(moments)
 library(stringr)
@@ -35,21 +35,21 @@ contr.simple <- function(n_levels) {
 ################################### IMPORT DATA ###################################
 
 #Word averaged data
-wdata <- read_csv("EmCon_WordAveraged_long.csv")
+wdata <- read_csv(file.path("data", "EmCon_WordAveraged_long.csv"))
 wdata$valence <- factor(wdata$valence, levels=c("NEU", "NEG", "animal"))
 contrasts(wdata$valence) <- contr.simple(nlevels(wdata$valence))
 wdata$delay <- factor(wdata$delay, levels=c("immediate", "delayed"))
 contrasts(wdata$delay) <- contr.simple(nlevels(wdata$delay))
 
 #Subject averaged data
-sdata <- read_csv("EmCon_SubAveraged_long.csv")
+sdata <- read_csv(file.path("data", "EmCon_SubAveraged_long.csv"))
 sdata$valence <- factor(sdata$valence, levels=c("NEU", "NEG", "animal"))
 contrasts(sdata$valence) <- contr.simple(nlevels(sdata$valence))
 sdata$delay <- factor(sdata$delay, levels=c("immediate", "delayed"))
 contrasts(sdata$delay) <- contr.simple(nlevels(sdata$delay))
 
 #Single trial data
-tdata <- read_csv("EmCon_SingleTrial.csv")
+tdata <- read_csv(file.path("data", "EmCon_SingleTrial.csv"))
 tdata$valence <- factor(tdata$valence, levels=c("NEU", "NEG", "animal"))
 contrasts(tdata$valence) <- contr.simple(nlevels(tdata$valence))
 tdata$delay <- factor(tdata$delay, levels=c("immediate", "delayed"))

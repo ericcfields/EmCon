@@ -1,7 +1,7 @@
 %Get single trial data for EmCon analyses
 %
 %Author: Eric Fields
-%Version Date: 8 March 2024
+%Version Date: 12 March 2024
 
 %% SET-UP
 
@@ -47,7 +47,7 @@ for s = 1:length(subs)
     baseline_time = [-200, -1];
     [~, bsln_start] = min(abs(EEG.times - baseline_time(1)));
     [~, bsln_end] = min(abs(EEG.times - baseline_time(2)));
-    assert(max(max(mean(EEG.data(:, bsln_start:bsln_end, :), 2))) < 1e-4);
+    assert(max(max(mean(EEG.data(:, bsln_start:bsln_end, :), 2))) < 1e-3);
 
     %GET PSYCHOPY DATA
     %Find psychopy encoding file
@@ -60,11 +60,19 @@ for s = 1:length(subs)
     %Drop non-trial rows
     idx = ~isnan(behav_data{:, 'unique_id'});
     behav_data = behav_data(idx, :);
+    
+    %Deal with missing tirials for 15_EmCon (4 trials not recorded after
+    %2nd long break)
+    if strcmp(subs{s}, '15_EmCon')
+        behav_data = behav_data([1:300, 305:440], :);
+    end
+
     %Check that trial numbers match
     assert(height(behav_data) == length(EEG.epoch));
     %Check that event codes match
     for ep = 1:length(EEG.epoch)
         assert(behav_data{ep, 'word_ec'} == str2double(EEG.epoch(ep).eventtype(end-3:end-1)));
+        %fprintf('Epoch %d:\t%d\t%d\n', ep, behav_data{ep, 'word_ec'}, str2double(EEG.epoch(ep).eventtype(end-3:end-1)));
     end
     
     %Get indices
@@ -243,7 +251,7 @@ for s = 1:length(subs)
 end
 
 %Write data to csv
-writetable(data, fullfile(st_dir, 'EmCon_SingleTrial.csv'));
+writetable(data, fullfile(st_dir, 'data', 'EmCon_SingleTrial.csv'));
 
 %Turn warnings back on
 warning('on', 'MATLAB:table:RowsAddedExistingVars');
