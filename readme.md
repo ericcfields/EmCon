@@ -84,10 +84,9 @@ Code was developed and tested in MATLAB 2023a, EEGLAB 2023.1, ERPLAB 10.04, Pyth
 
 ### Statistical Analysis
 
-Code for and results of statistical analysis can be found in the "stats" folder.  
+Code for and results of statistical analysis can be found in the stats folder.  
 
-* Analysis of behavioral memory data is contained in `EmCon_memory_analyses.R`. This script conducts a Valence X Delay ANOVA plus interaction follow-ups for all behavioral memory variables. Summary descriptive and inferential output tables are produced along with separate .csv with full results of all analyses.
+* Analysis of behavioral memory data is contained in `EmCon_memory_analyses.R`. This script conducts a Valence X Delay ANOVA plus interaction follow-ups for all behavioral memory variables. Summary descriptive and inferential output tables are produced along with separate .csv files with full results of all analyses.
 * Mass univariate analysis of ERP data are run by `EmCon_makeGND.m` and `EmCon_mass_uni_analyses`.
-* Single trial, word averaged, and subject averaged ERP data are produced by `EmCon_SingleTrial.m` and `EmCon_compile_averaged.py`.
+* Single trial, word averaged, and subject averaged ERP data—with ERPs averaged across electrodes and time points of interest—are produced by `EmCon_SingleTrial.m` and `EmCon_compile_averaged.py`. Mediation analyses using this averaged data are conducted by `EmCon_MediationAnalysis.R`.
 
-Additional analyses and details TBD.
