@@ -1,7 +1,7 @@
 %Get single trial data for EmCon analyses
 %
 %Author: Eric Fields
-%Version Date: 12 March 2024
+%Version Date: 16 March 2024
 
 %% SET-UP
 
@@ -67,15 +67,14 @@ for s = 1:length(subs)
         behav_data = behav_data([1:300, 305:440], :);
     end
 
-    %Check that trial numbers match
+    %Check that trials match in EEG data and psychopy data
     assert(height(behav_data) == length(EEG.epoch));
-    %Check that event codes match
     for ep = 1:length(EEG.epoch)
         assert(behav_data{ep, 'word_ec'} == str2double(EEG.epoch(ep).eventtype(end-3:end-1)));
         %fprintf('Epoch %d:\t%d\t%d\n', ep, behav_data{ep, 'word_ec'}, str2double(EEG.epoch(ep).eventtype(end-3:end-1)));
     end
     
-    %Get indices
+    %Get channel and time point indices for ROIs
     p_chan_idx = find(ismember({EEG.chanlocs.labels}, p_chans));
     [~, p_start_sample] = min(abs( EEG.times - p_time_wind(1) ));
     [~, p_end_sample  ] = min(abs( EEG.times - p_time_wind(2) ));
@@ -94,8 +93,7 @@ for s = 1:length(subs)
         %sub ID
         data{row, 'sub_id'} = subs{s};
 
-        %unique word ID
-        %TO DO
+        %Word and word ID
         data{row, 'word_id'} = behav_data{ep, 'unique_id'};
         data{row, 'word'} = behav_data{ep, 'stim_word'};
         
@@ -103,7 +101,7 @@ for s = 1:length(subs)
         ev_idx = find(EEG.epoch(ep).eventlatency==0);
         assert(length(ev_idx)==1);
 
-        %Add order
+        %Add order or presentation
         data{row, 'order'} = ep;
         
         %Get valence condition
@@ -114,6 +112,8 @@ for s = 1:length(subs)
             data{row, 'valence'} = "NEG";
         elseif first_bin == 3
             data{row, 'valence'} = "animal";
+        else
+            error('First bin for %s epoch %d is not 1, 2, or 3', subs{s}, ep);
         end
 
         %Get accuracy
@@ -261,3 +261,4 @@ warning('on', 'MATLAB:table:RowsAddedExistingVars');
 
 py_addpath(st_dir);
 py.EmCon_compile_averaged.main();
+

@@ -4,18 +4,50 @@ Take single trial data and create word and subject averaged data and add other
 information.
 
 Author: Eric Fields
-Version Date: 12 March 2024
+Version Date: 14 March 2024
 """
 
 from os.path import join
 import pandas as pd
 
 
+def update_st_data(main_dir, save_file=False):
+    """
+    Add response bias to single trial data
+    """
+    
+    #Import data
+    st_file = join(main_dir, 'stats', 'erp', 'avg', 'data', 'EmCon_SingleTrial.csv')
+    st_data = pd.read_csv(st_file)
+    mem_data = pd.read_csv(join(main_dir, 'stats', 'behavioral', 'EmCon_memory_wide.csv'))
+    
+    #Add response bias data
+    for sub in st_data['sub_id'].unique():
+        for val in ['NEU', 'NEG', 'animal']:
+            for dly in ['immediate', 'delayed']:
+                
+                #Get index for relevant trials
+                idx = ((st_data['sub_id'] == sub) &
+                       (st_data['valence'] == val) &
+                       (st_data['delay'] == dly))
+                
+                #Add signal detection measure of response bias
+                mem_col = '%s_%s_criterion' % (val, dly[0].upper())
+                st_data.loc[idx, 'sub_bias'] = mem_data.loc[mem_data['sub_id']==sub, mem_col].values[0]
+    
+    #Output data
+    if save_file:
+        st_data.to_csv(st_file, index=False)
+    
+    return st_data
+    
+
 def make_word_averaged(st_data, out_dir=None):
     """
     Average data by word and return long format and wide format data
     """
-
+    
+    #Only use trials with a correct response that were not rejected
     idx = (st_data['art_rej'] == 0) & (st_data['acc'] == 1)
     
     #Get word averaged data
@@ -90,29 +122,10 @@ def make_sub_averaged(st_data, out_dir=None):
 def main():
 
     main_dir = r'C:\Users\fieldsec\OneDrive - Westminster College\Documents\ECF\Research\EmCon\DATA'
-    avg_dir = join(main_dir, 'stats', 'erp', 'avg')
-    out_dir = join(avg_dir, 'data')
+    out_dir = join(main_dir, 'stats', 'erp', 'avg', 'data')
     
-    #Import data
-    st_file = join(avg_dir, 'data', 'EmCon_SingleTrial.csv')
-    st_data = pd.read_csv(st_file)
-    mem_data = pd.read_csv(join(main_dir, 'stats', 'behavioral', 'EmCon_memory_wide.csv'))
-    
-    #Add response bias data
-    for sub in st_data['sub_id'].unique():
-        for val in ['NEU', 'NEG', 'animal']:
-            for dly in ['immediate', 'delayed']:
-                
-                #Get index for relevant trials
-                idx = ((st_data['sub_id'] == sub) &
-                       (st_data['valence'] == val) &
-                       (st_data['delay'] == dly))
-                
-                #Add signal detection measure of response bias
-                mem_col = '%s_%s_criterion' % (val, dly[0].upper())
-                st_data.loc[idx, 'sub_bias'] = mem_data.loc[mem_data['sub_id']==sub, mem_col].values[0]
-    #Output data with response bias added
-    st_data.to_csv(st_file, index=False)
+    #Add response bias to single trial data
+    st_data = update_st_data(main_dir, save_file=False)
     
     #Get word averaged data
     (wdata, wdata_wide) = make_word_averaged(st_data, out_dir=out_dir)
