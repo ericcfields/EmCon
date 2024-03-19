@@ -1,7 +1,7 @@
 #Run analyses to test if the LPP mediates the effect of emotion on memory
 #
 #Author: Eric Fields
-#Version Date: 12 March 2024
+#Version Date: 19 March 2024
 
 library(moments)
 library(stringr)
@@ -157,8 +157,8 @@ for (dly in c("immediate", "delayed")) {
   #Calculate mediation with response bias controlled
   #QUESTION: sub_bias in med model?
   val.fit <- lm(old_resp ~ 1 + valence + sub_bias, data=data_subset)
-  #lpp.fit <- lm(old_resp ~ 1 + LPP, data=data_subset)
-  med.fit <- lm(LPP ~ 1 + valence, data=data_subset)
+  lpp.fit <- lm(old_resp ~ 1 + LPP + sub_bias, data=data_subset)
+  med.fit <- lm(LPP ~ 1 + valence + sub_bias, data=data_subset)
   out.fit <- lm(old_resp ~ 1 + LPP + valence + sub_bias, data=data_subset)
   med.out <- mediate(med.fit, out.fit, treat = "valence", mediator = "LPP",
                      control.value = "NEU", treat.value = "NEG",
@@ -224,8 +224,8 @@ for (dly in c("immediate", "delayed")) {
   #Calculate mediation with response bias controlled
   #QUESTION: sub_bias in med model?
   val.fit <- lmer(old_resp ~ 1 + valence + sub_bias + (1|sub_id), data=data_subset)
-  #lpp.fit <- lmer(old_resp ~ 1 + LPP + (1|sub_id), data=data_subset)
-  med.fit <- lmer(LPP ~ 1 + valence + (1|sub_id),
+  lpp.fit <- lmer(old_resp ~ 1 + LPP + sub_bias + (1|sub_id), data=data_subset)
+  med.fit <- lmer(LPP ~ 1 + valence + sub_bias + (1|sub_id),
                   data=data_subset)
   out.fit <- lmer(old_resp ~ 1 + valence + LPP + sub_bias + (1|sub_id),
                   data=data_subset)
