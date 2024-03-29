@@ -59,7 +59,7 @@ contrasts(tdata$delay) <- contr.simple(nlevels(tdata$delay))
 ################################### GENERAL SETTINGS ###################################
 
 #Number of simulations to run when calculating inferential stats for mediation models
-sims <- 1e3
+sims <- 999
 
 #Output results to file
 sink("results/EmCon_mediation_results.txt")

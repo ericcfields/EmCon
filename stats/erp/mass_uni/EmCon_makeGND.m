@@ -5,6 +5,9 @@
 
 clearvars; close all;
 
+%Start/clear EEGLAB
+[~, ~, ~, ~] = eeglab;
+
 main_dir = 'C:\Users\fieldsec\OneDrive - Westminster College\Documents\ECF\Research\EmCon\DATA';
 mua_dir = fullfile(main_dir, 'stats', 'erp', 'mass_uni');
 
