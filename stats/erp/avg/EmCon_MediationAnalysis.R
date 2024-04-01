@@ -198,10 +198,13 @@ for (word in unique(wdata$word)) {
   dly_ON <- wdata[wdata$word==word & wdata$delay=="delayed", ]$old_resp
   imm_RK <- wdata[wdata$word==word & wdata$delay=="immediate", ]$rk_resp
   dly_RK <- wdata[wdata$word==word & wdata$delay=="delayed", ]$rk_resp
+  imm_bias <- wdata[wdata$word==word & wdata$delay=="immediate", ]$sub_bias
+  dly_bias <- wdata[wdata$word==word & wdata$delay=="delayed", ]$sub_bias
   c_wdata[word, "valence"] <- unique(wdata[wdata$word==word, "valence"])
   c_wdata[word, "LPP"] <- (imm_N*imm_LPP + dly_N*dly_LPP) / (imm_N + dly_N)
   c_wdata[word, "dly_effect_ON"] <- imm_ON - dly_ON
   c_wdata[word, "dly_effect_RK"] <- imm_RK - dly_RK
+  c_wdata[word, "dly_effect_bias"] <- imm_bias - dly_bias
 }
 
 #Ignore animal trials
@@ -234,6 +237,29 @@ cat("\n\n")
 print(summary(med.out))
 plot(med.out)
 title("WORD AVERAGED DELAY EFFECT")
+
+#Mediation controlling for bias
+val.fit <- lm(dly_effect_ON ~ 1 + valence + dly_effect_bias, data=data_subset)
+lpp.fit <- lm(dly_effect_ON ~ 1 + LPP + dly_effect_bias, data=data_subset)
+med.fit <- lm(LPP ~ 1 + valence + dly_effect_bias, data=data_subset)
+out.fit <- lm(dly_effect_ON ~ 1 + valence + LPP + dly_effect_bias, data=data_subset)
+med.out <- mediate(med.fit, out.fit, treat = "valence", mediator = "LPP",
+                   control.value = "NEU", treat.value = "NEG",
+                   sims = sims, boot = TRUE, boot.ci.type = "bca")
+
+#Produce output in console and plots
+cat("\n\n\n####### WORD AVERAGED DELAY EFFECT (CONTROL FOR BIAS) #######\n\n")
+print(summary(med.fit))
+cat("\n\n")
+print(summary(lpp.fit))
+cat("\n\n")
+print(summary(val.fit))
+cat("\n\n")
+print(summary(out.fit))
+cat("\n\n")
+print(summary(med.out))
+plot(med.out)
+title("WORD AVERAGED DELAY EFFECT (CONTROL FOR BIAS)")
 
 
 ################### SUBJECT AVERAGED MEDIATION ANALYSIS ###################
