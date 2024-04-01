@@ -4,10 +4,11 @@ Take single trial data and create word and subject averaged data and add other
 information.
 
 Author: Eric Fields
-Version Date: 14 March 2024
+Version Date: 1 April 2024
 """
 
 from os.path import join
+import numpy as np
 import pandas as pd
 
 
@@ -20,6 +21,25 @@ def update_st_data(main_dir, save_file=False):
     st_file = join(main_dir, 'stats', 'erp', 'avg', 'data', 'EmCon_SingleTrial.csv')
     st_data = pd.read_csv(st_file)
     mem_data = pd.read_csv(join(main_dir, 'stats', 'behavioral', 'EmCon_memory_wide.csv'))
+    
+    #Add centered and standardized LPP
+    for sub in st_data['sub_id'].unique():
+        #Relevant trials
+        sub_idx = st_data['sub_id'] == sub
+        sub_neu_idx = sub_idx & (st_data['valence'] == 'NEU')
+        sub_neg_idx = sub_idx & (st_data['valence'] == 'NEG')
+        #Descriptives
+        N_LPP_NEU = sub_neu_idx.sum()
+        N_LPP_NEG = sub_neg_idx.sum()
+        M_LPP_NEU = st_data.loc[sub_neu_idx, 'LPP'].mean()
+        s_LPP_NEU = st_data.loc[sub_neu_idx, 'LPP'].std()
+        s_LPP_NEG = st_data.loc[sub_neg_idx, 'LPP'].std()
+        #Calculated pooled standard deviation
+        sp = np.sqrt(((N_LPP_NEU-1)*s_LPP_NEU**2 + (N_LPP_NEG-1)*s_LPP_NEG**2) 
+                     / (N_LPP_NEU + N_LPP_NEG -2))
+        #Add centered and standardized LPP
+        st_data.loc[sub_idx, 'cLPP'] = st_data.loc[sub_idx, 'LPP'] - M_LPP_NEU
+        st_data.loc[sub_idx, 'ZLPP'] = st_data.loc[sub_idx, 'cLPP'] / sp
     
     #Add response bias data
     for sub in st_data['sub_id'].unique():
@@ -125,7 +145,7 @@ def main():
     out_dir = join(main_dir, 'stats', 'erp', 'avg', 'data')
     
     #Add response bias to single trial data
-    st_data = update_st_data(main_dir, save_file=False)
+    st_data = update_st_data(main_dir, save_file=True)
     
     #Get word averaged data
     (wdata, wdata_wide) = make_word_averaged(st_data, out_dir=out_dir)
