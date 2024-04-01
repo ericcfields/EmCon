@@ -1,7 +1,7 @@
 #Run analyses to test if the LPP mediates the effect of emotion on memory
 #
 #Author: Eric Fields
-#Version Date: 19 March 2024
+#Version Date: 1 April 2024
 
 library(moments)
 library(stringr)
@@ -182,6 +182,58 @@ for (dly in c("immediate", "delayed")) {
   #TO DO
 
 }
+
+
+
+################### WORD AVERAGED: ANALYSIS OF MEMORY DELAY EFFECT ###################
+
+#Get (weighted) average LPP and difference in memory across delay for each word
+c_wdata <- data.frame()
+for (word in unique(wdata$word)) {
+  imm_N <- wdata[wdata$word==word & wdata$delay=="immediate", ]$N_trials
+  dly_N <- wdata[wdata$word==word & wdata$delay=="delayed", ]$N_trials
+  imm_LPP <- wdata[wdata$word==word & wdata$delay=="immediate", ]$LPP
+  dly_LPP <- wdata[wdata$word==word & wdata$delay=="delayed", ]$LPP
+  imm_ON <- wdata[wdata$word==word & wdata$delay=="immediate", ]$old_resp
+  dly_ON <- wdata[wdata$word==word & wdata$delay=="delayed", ]$old_resp
+  imm_RK <- wdata[wdata$word==word & wdata$delay=="immediate", ]$rk_resp
+  dly_RK <- wdata[wdata$word==word & wdata$delay=="delayed", ]$rk_resp
+  c_wdata[word, "valence"] <- unique(wdata[wdata$word==word, "valence"])
+  c_wdata[word, "LPP"] <- (imm_N*imm_LPP + dly_N*dly_LPP) / (imm_N + dly_N)
+  c_wdata[word, "dly_effect_ON"] <- imm_ON - dly_ON
+  c_wdata[word, "dly_effect_RK"] <- imm_RK - dly_RK
+}
+
+#Ignore animal trials
+data_subset <- c_wdata[c_wdata$valence != "animal", ]
+data_subset$valence <- factor(data_subset$valence, levels=c("NEU", "NEG"))
+contrasts(data_subset$valence) <- contr.simple(nlevels(data_subset$valence))
+
+#LPP to delay effect correlation
+cor_results <- cor.test(c_wdata$LPP, c_wdata$dly_effect_ON)
+
+#Mediation
+val.fit <- lm(dly_effect_ON ~ 1 + valence, data=data_subset)
+lpp.fit <- lm(dly_effect_ON ~ 1 + LPP, data=data_subset)
+med.fit <- lm(LPP ~ 1 + valence, data=data_subset)
+out.fit <- lm(dly_effect_ON ~ 1 + valence + LPP, data=data_subset)
+med.out <- mediate(med.fit, out.fit, treat = "valence", mediator = "LPP",
+                   control.value = "NEU", treat.value = "NEG",
+                   sims = sims, boot = TRUE, boot.ci.type = "bca")
+
+#Produce output in console and plots
+cat("\n\n\n####### WORD AVERAGED DELAY EFFECT #######\n\n")
+print(summary(med.fit))
+cat("\n\n")
+print(summary(lpp.fit))
+cat("\n\n")
+print(summary(val.fit))
+cat("\n\n")
+print(summary(out.fit))
+cat("\n\n")
+print(summary(med.out))
+plot(med.out)
+title("WORD AVERAGED DELAY EFFECT")
 
 
 ################### SUBJECT AVERAGED MEDIATION ANALYSIS ###################
