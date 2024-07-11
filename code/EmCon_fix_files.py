@@ -3,7 +3,7 @@
 Fix problems in PsychoPy files
 
 Author: Eric Fields
-Version Date: 7 March 2024
+Version Date: 27 June 2024
 """
 
 import os
@@ -49,9 +49,11 @@ for file in os.listdir(join(behav_dir, 'orig')):
 
 #%% Fix flipped response buttons during encoding for 05_EmCon
 
-enc_05 = pd.read_csv(join(behav_dir, 'orig', '05_EmCon_EmCon_enc_2023-10-27_16h36.07.964.csv'))
-enc_05['animal_hand'] = 'R'
-enc_05.to_csv(join(behav_dir, '05_EmCon_enc_2023-10-27_16h36.07.964_corrected.csv'))
+new_file = join(behav_dir, '05_EmCon_enc_2023-10-27_16h36.07.964_corrected.csv')
+if not os.path.isfile(new_file):
+    enc_05 = pd.read_csv(join(behav_dir, 'orig', '05_EmCon_EmCon_enc_2023-10-27_16h36.07.964.csv'))
+    enc_05['animal_hand'] = 'R'
+    enc_05.to_csv(new_file)
 
 
 #%% Combine encoding for 06_EmCon (split into two files due to error)
