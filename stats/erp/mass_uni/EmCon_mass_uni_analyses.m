@@ -1,7 +1,7 @@
 %Mass univariate statistical anlysis for EmCon
 %
 %Author: Eric Fields
-%Version Date: 12 March 2024
+%Version Date: 12 August 2024
 
 %% SET-UP
 
@@ -18,7 +18,7 @@ cd(mua_dir);
 load(fullfile(mua_dir, 'EmCon_128Hz.GND'), '-mat');
 
 %Parameters
-n_perm = 1e4;
+n_perm = 1e3;
 thresh_p = 0.01;
 chan_hood = 70;
 
@@ -66,7 +66,7 @@ for i = 1:length(time_windows)
     %One-way ANOVA
     GND = FclustGND(GND, ...
                     'bins', [1, 3], ...  
-                    'factor_names', 'OdballEffect', ...  
+                    'factor_names', 'OddballEffect', ...
                     'factor_levels', 2, ...
                     'time_wind', time_wind, ...
                     'include_chans', chans{i}, ...

@@ -3,7 +3,7 @@
 Process behvavioral data for EmCon
 
 Author: Eric Fields
-Version Date: 9 March 2024
+Version Date: 12 August 2024
 
 Copyright (c) 2023, Eric Fields
 All rights reserved.
@@ -94,6 +94,8 @@ def process_sub_behav_data(sub_id, main_dir=None, behav_data=None):
     enc_file = [file for file in os.listdir(behav_dir) if 
     			file.startswith('%s_enc' % sub_id) and
     			file.endswith('.csv')]
+    if any('_corrected' in file for file in enc_file):
+        enc_file = [file for file in enc_file if '_corrected' in file]
     if len(enc_file) != 1:
         raise RuntimeError('%s has %d encoding files' % (sub_id, len(enc_file)))
     enc_file = enc_file[0]
