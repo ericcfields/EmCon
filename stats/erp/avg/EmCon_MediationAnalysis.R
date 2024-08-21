@@ -1,7 +1,7 @@
 #Run analyses to test if the LPP mediates the effect of emotion on memory
 #
 #Author: Eric Fields
-#Version Date: 1 April 2024
+#Version Date: 21 August 2024
 
 library(moments)
 library(stringr)
@@ -59,7 +59,7 @@ contrasts(tdata$delay) <- contr.simple(nlevels(tdata$delay))
 ################################### GENERAL SETTINGS ###################################
 
 #Number of simulations to run when calculating inferential stats for mediation models
-sims <- 999
+sims <- 9999
 
 #Output results to file
 sink("results/EmCon_mediation_results.txt")
@@ -69,6 +69,7 @@ sink("results/EmCon_mediation_results.txt")
 
 DVs <- c("old_resp", "rk_resp", "frontal_pos", "LPP", "sub_bias", "N_trials")
 
+#Calculate word-averaged descriptives
 w_desc_table <- data.frame()
 for (DV in DVs) {
   for (val in c("NEU", "NEG")) {
@@ -90,9 +91,9 @@ for (DV in DVs) {
     }
   }
 }
-
 write.csv(w_desc_table, "results/EmCon_mediation_WordAveraged_descriptives.csv")
 
+#Calculate subject-averaged descriptives
 s_desc_table <- data.frame()
 for (DV in DVs) {
   for (val in c("NEU", "NEG")) {
@@ -114,11 +115,10 @@ for (DV in DVs) {
     }
   }
 }
-
 write.csv(s_desc_table, "results/EmCon_mediation_SubAveraged_descriptives.csv")
 
 
-########################## WORD AVERAGED MEDIATION ANALYSIS ##########################
+########################## WORD-AVERAGED MEDIATION ANALYSIS ##########################
 
 #Mediation separately in immediate and delayed conditions
 for (dly in c("immediate", "delayed")) {
@@ -126,9 +126,11 @@ for (dly in c("immediate", "delayed")) {
   #Get delay subset and ignore animal trials
   data_subset <- wdata[(wdata$valence != "animal") & (wdata$delay == dly), ]
   data_subset$valence <- factor(data_subset$valence, levels=c("NEU", "NEG"))
+  
+  #Simple code the valence factor
   contrasts(data_subset$valence) <- contr.simple(nlevels(data_subset$valence))
   
-  #Calculate mediation
+  #Calculate regressio models and mediation
   val.fit <- lm(old_resp ~ 1 + valence, data=data_subset)
   lpp.fit <- lm(old_resp ~ 1 + LPP, data=data_subset)
   med.fit <- lm(LPP ~ 1 + valence, data=data_subset)
@@ -151,11 +153,7 @@ for (dly in c("immediate", "delayed")) {
   plot(med.out)
   title(sprintf("%s WORD AVERAGED", str_to_upper(dly)))
   
-  #Output results to file
-  #TO DO
-  
-  #Calculate mediation with response bias controlled
-  #QUESTION: sub_bias in med model?
+  #Calculate regression and  mediation with response bias controlled
   val.fit <- lm(old_resp ~ 1 + valence + sub_bias, data=data_subset)
   lpp.fit <- lm(old_resp ~ 1 + LPP + sub_bias, data=data_subset)
   med.fit <- lm(LPP ~ 1 + valence + sub_bias, data=data_subset)
@@ -177,9 +175,6 @@ for (dly in c("immediate", "delayed")) {
   print(summary(med.out))
   plot(med.out)
   title(sprintf("%s WORD AVERAGED (CONTROLLING FOR BIAS)", str_to_upper(dly)))
-  
-  #Output results to file
-  #TO DO
 
 }
 
@@ -210,12 +205,14 @@ for (word in unique(wdata$word)) {
 #Ignore animal trials
 data_subset <- c_wdata[c_wdata$valence != "animal", ]
 data_subset$valence <- factor(data_subset$valence, levels=c("NEU", "NEG"))
+
+#Simple code the valence factor
 contrasts(data_subset$valence) <- contr.simple(nlevels(data_subset$valence))
 
 #LPP to delay effect correlation
 cor_results <- cor.test(c_wdata$LPP, c_wdata$dly_effect_ON)
 
-#Mediation
+#Regression models and mediation
 val.fit <- lm(dly_effect_ON ~ 1 + valence, data=data_subset)
 lpp.fit <- lm(dly_effect_ON ~ 1 + LPP, data=data_subset)
 med.fit <- lm(LPP ~ 1 + valence, data=data_subset)
@@ -238,7 +235,7 @@ print(summary(med.out))
 plot(med.out)
 title("WORD AVERAGED DELAY EFFECT")
 
-#Mediation controlling for bias
+#Regression and mediation controlling for bias
 val.fit <- lm(dly_effect_ON ~ 1 + valence + dly_effect_bias, data=data_subset)
 lpp.fit <- lm(dly_effect_ON ~ 1 + LPP + dly_effect_bias, data=data_subset)
 med.fit <- lm(LPP ~ 1 + valence + dly_effect_bias, data=data_subset)
@@ -269,9 +266,11 @@ for (dly in c("immediate", "delayed")) {
   #Get delay subset and ignore animal trials
   data_subset <- sdata[(sdata$valence != "animal") & (sdata$delay == dly), ]
   data_subset$valence <- factor(data_subset$valence, levels=c("NEU", "NEG"))
+  
+  #Simple code the valence factor
   contrasts(data_subset$valence) <- contr.simple(nlevels(data_subset$valence))
   
-  #Calculate mediation
+  #Calculate regression and mediation
   val.fit <- lmer(old_resp ~ 1 + valence + (1|sub_id), data=data_subset)
   lpp.fit <- lmer(old_resp ~ 1 + LPP + (1|sub_id), data=data_subset)
   med.fit <- lmer(LPP ~ 1 + valence + (1|sub_id),
@@ -296,11 +295,7 @@ for (dly in c("immediate", "delayed")) {
   plot(med.out)
   title(sprintf("%s SUBJECT AVERAGED", str_to_upper(dly)))
   
-  #Output results to file
-  #TO DO
-  
   #Calculate mediation with response bias controlled
-  #QUESTION: sub_bias in med model?
   val.fit <- lmer(old_resp ~ 1 + valence + sub_bias + (1|sub_id), data=data_subset)
   lpp.fit <- lmer(old_resp ~ 1 + LPP + sub_bias + (1|sub_id), data=data_subset)
   med.fit <- lmer(LPP ~ 1 + valence + sub_bias + (1|sub_id),
@@ -325,59 +320,6 @@ for (dly in c("immediate", "delayed")) {
   plot(med.out)
   title(sprintf("%s SUBJECT AVERAGED (CONTROLLING FOR BIAS)", str_to_upper(dly)))
   
-  #Output results to file
-  #TO DO
-  
 }
 
 sink()
-stop("Code after this point does not work.")
-
-
-################### SINGLE TRIAL MEDIATION ANALYSIS ###################
-
-for (dly in c("immediate", "delayed")) {
-  
-  #Get delay subset and ignore animal trials
-  data_subset <- tdata[(tdata$valence != "animal") & (tdata$delay == dly), ]
-  data_subset$valence <- factor(data_subset$valence, levels=c("NEU", "NEG"))
-  contrasts(data_subset$valence) <- contr.simple(nlevels(data_subset$valence))
-  
-  #Calculate mediation
-  med.fit <- lmer(LPP ~ 1 + valence + (1+valence|sub_id),
-                  data=data_subset) 
-  out.fit <- glmer(old_resp ~ valence + LPP + (1+valence+LPP|sub_id) + (1+valence+LPP|word),
-                   family = binomial(link = "logit"), data = data_subset)
-  #DOES NOT WORK AFTER THIS POINT
-  #CANNOT HAVE TWO RANDOM FACTORS?
-  med.out <- mediate(med.fit, out.fit, treat = "valence", mediator = "LPP", 
-                     robustSE = TRUE, sims = sims, boot = boot, boot.ci.type = boot.ci.type)
-  
-}
-
-
-################### WORD AVERAGED MODERATED MEDIATION ANALYSIS ###################
-
-#Ignore animal trials
-data_subset <- wdata[wdata$valence != "animal", ]
-data_subset$valence <- factor(data_subset$valence, levels=c("NEU", "NEG"))
-contrasts(data_subset$valence) <- contr.simple(nlevels(data_subset$valence))
-data_subset[, "LPP.c"] <- data_subset$LPP - mean(data_subset$LPP)
-
-#Calculate mediation
-med.fit <- lmer(LPP.c ~ 1 + valence*delay + (1|word), 
-                data=data_subset)
-
-out.fit <- lmer(old_resp ~ 1 + valence*delay + delay*LPP.c + (1|word), 
-                data=data_subset)
-
-med.init <- mediate(med.fit, out.fit, treat = "valence", mediator = "LPP.c", 
-                    sims=2)
-
-#NOTE: DOES NOT WORK AFTER THIS POINT
-#NO MOEDRATED MEDIATION FOR MIXED MODELS?
-#Test moderation
-test.modmed(med.init, covariates.1 = list(delay = "immediate"),
-            covariates.2 = list(delay = "delay"), 
-            sims = sims, boot = boot, boot.ci.type = boot.ci.type)
-
