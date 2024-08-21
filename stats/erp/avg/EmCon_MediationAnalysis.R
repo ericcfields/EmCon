@@ -8,6 +8,7 @@ library(stringr)
 library(readr)
 library(tibble)
 library(lme4)
+library(lmerTest)
 library(mediation)
 
 #Load Wilcox robust functions
@@ -271,11 +272,11 @@ for (dly in c("immediate", "delayed")) {
   contrasts(data_subset$valence) <- contr.simple(nlevels(data_subset$valence))
   
   #Calculate regression and mediation
-  val.fit <- lmer(old_resp ~ 1 + valence + (1|sub_id), data=data_subset)
-  lpp.fit <- lmer(old_resp ~ 1 + LPP + (1|sub_id), data=data_subset)
-  med.fit <- lmer(LPP ~ 1 + valence + (1|sub_id),
+  val.fit <- lme4::lmer(old_resp ~ 1 + valence + (1|sub_id), data=data_subset)
+  lpp.fit <- lme4::lmer(old_resp ~ 1 + LPP + (1|sub_id), data=data_subset)
+  med.fit <- lme4::lmer(LPP ~ 1 + valence + (1|sub_id),
                   data=data_subset)
-  out.fit <- lmer(old_resp ~ 1 + valence + LPP + (1|sub_id),
+  out.fit <- lme4::lmer(old_resp ~ 1 + valence + LPP + (1|sub_id),
                   data=data_subset)
   med.out <- mediate(med.fit, out.fit, treat = "valence", mediator = "LPP",
                      control.value = "NEU", treat.value = "NEG",
@@ -283,24 +284,24 @@ for (dly in c("immediate", "delayed")) {
   
   #Produce output in console and plots
   cat(sprintf("\n\n\n####### %s SUBJECT AVERAGED #######\n\n", str_to_upper(dly)))
-  print(summary(med.fit))
+  print(summary(as_lmerModLmerTest(med.fit)))
   cat("\n\n")
-  print(summary(lpp.fit))
+  print(summary(as_lmerModLmerTest(lpp.fit)))
   cat("\n\n")
-  print(summary(val.fit))
+  print(summary(as_lmerModLmerTest(val.fit)))
   cat("\n\n")
-  print(summary(out.fit))
+  print(summary(as_lmerModLmerTest(out.fit)))
   cat("\n\n")
   print(summary(med.out))
   plot(med.out)
   title(sprintf("%s SUBJECT AVERAGED", str_to_upper(dly)))
   
   #Calculate mediation with response bias controlled
-  val.fit <- lmer(old_resp ~ 1 + valence + sub_bias + (1|sub_id), data=data_subset)
-  lpp.fit <- lmer(old_resp ~ 1 + LPP + sub_bias + (1|sub_id), data=data_subset)
-  med.fit <- lmer(LPP ~ 1 + valence + sub_bias + (1|sub_id),
+  val.fit <- lme4::lmer(old_resp ~ 1 + valence + sub_bias + (1|sub_id), data=data_subset)
+  lpp.fit <- lme4::lmer(old_resp ~ 1 + LPP + sub_bias + (1|sub_id), data=data_subset)
+  med.fit <- lme4::lmer(LPP ~ 1 + valence + sub_bias + (1|sub_id),
                   data=data_subset)
-  out.fit <- lmer(old_resp ~ 1 + valence + LPP + sub_bias + (1|sub_id),
+  out.fit <- lme4::lmer(old_resp ~ 1 + valence + LPP + sub_bias + (1|sub_id),
                   data=data_subset)
   med.out <- mediate(med.fit, out.fit, treat = "valence", mediator = "LPP",
                      control.value = "NEU", treat.value = "NEG",
@@ -308,13 +309,13 @@ for (dly in c("immediate", "delayed")) {
   
   #Produce output in console and plots
   cat(sprintf("\n\n\n####### %s SUBJECT AVERAGED (CONTROLLING FOR BIAS) #######\n\n", str_to_upper(dly)))
-  print(summary(med.fit))
+  print(summary(as_lmerModLmerTest(med.fit)))
   cat("\n\n")
-  print(summary(lpp.fit))
+  print(summary(as_lmerModLmerTest(lpp.fit)))
   cat("\n\n")
-  print(summary(val.fit))
+  print(summary(as_lmerModLmerTest(val.fit)))
   cat("\n\n")
-  print(summary(out.fit))
+  print(summary(as_lmerModLmerTest(out.fit)))
   cat("\n\n")
   print(summary(med.out))
   plot(med.out)
