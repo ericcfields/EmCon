@@ -18,7 +18,7 @@ cd(mua_dir);
 load(fullfile(mua_dir, 'EmCon_128Hz.GND'), '-mat');
 
 %Parameters
-n_perm = 1e3;
+n_perm = 1e5;
 thresh_p = 0.01;
 chan_hood = 70;
 
