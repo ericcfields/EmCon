@@ -60,7 +60,7 @@ contrasts(tdata$delay) <- contr.simple(nlevels(tdata$delay))
 ################################### GENERAL SETTINGS ###################################
 
 #Number of simulations to run when calculating inferential stats for mediation models
-sims <- 9999
+sims <- 99999
 
 #Output results to file
 sink("results/EmCon_mediation_results.txt")
@@ -203,7 +203,7 @@ for (word in unique(wdata$word)) {
   c_wdata[word, "dly_effect_bias"] <- imm_bias - dly_bias
 }
 
-#Ignore animal trials
+#Ignore animal trials & code valence factors
 data_subset <- c_wdata[c_wdata$valence != "animal", ]
 data_subset$valence <- factor(data_subset$valence, levels=c("NEU", "NEG"))
 
@@ -322,5 +322,92 @@ for (dly in c("immediate", "delayed")) {
   title(sprintf("%s SUBJECT AVERAGED (CONTROLLING FOR BIAS)", str_to_upper(dly)))
   
 }
+
+
+################### SUBJECT AVERAGED: ANALYSIS OF MEMORY DELAY EFFECT ###################
+
+#Get (weighted) average LPP and difference in memory across delay for each sub_id & valence
+c_sdata <- data.frame()
+row <- 0
+for (sub_id in unique(sdata$sub_id)) {
+  for (val in c("NEU", "NEG")) {
+    
+    imm_N <- sdata[sdata$sub_id==sub_id & sdata$valence==val & sdata$delay=="immediate", ]$N_trials
+    dly_N <- sdata[sdata$sub_id==sub_id & sdata$valence==val & sdata$delay=="delayed", ]$N_trials
+    imm_LPP <- sdata[sdata$sub_id==sub_id & sdata$valence==val & sdata$delay=="immediate", ]$LPP
+    dly_LPP <- sdata[sdata$sub_id==sub_id & sdata$valence==val & sdata$delay=="delayed", ]$LPP
+    imm_ON <- sdata[sdata$sub_id==sub_id & sdata$valence==val & sdata$delay=="immediate", ]$old_resp
+    dly_ON <- sdata[sdata$sub_id==sub_id & sdata$valence==val & sdata$delay=="delayed", ]$old_resp
+    imm_RK <- sdata[sdata$sub_id==sub_id & sdata$valence==val & sdata$delay=="immediate", ]$rk_resp
+    dly_RK <- sdata[sdata$sub_id==sub_id & sdata$valence==val & sdata$delay=="delayed", ]$rk_resp
+    imm_bias <- sdata[sdata$sub_id==sub_id & sdata$valence==val & sdata$delay=="immediate", ]$sub_bias
+    dly_bias <- sdata[sdata$sub_id==sub_id & sdata$valence==val & sdata$delay=="delayed", ]$sub_bias
+    
+    row = row + 1
+    c_sdata[row, "sub_id"] <- sub_id
+    c_sdata[row, "valence"] <- val
+    c_sdata[row, "LPP"] <- (imm_N*imm_LPP + dly_N*dly_LPP) / (imm_N + dly_N)
+    c_sdata[row, "dly_effect_ON"] <- imm_ON - dly_ON
+    c_sdata[row, "dly_effect_RK"] <- imm_RK - dly_RK
+    c_sdata[row, "dly_effect_bias"] <- imm_bias - dly_bias
+    
+  }
+}
+
+#Code valence factor
+data_subset <- c_sdata
+data_subset$valence <- factor(data_subset$valence, levels=c("NEU", "NEG"))
+
+#Calculate regression and mediation
+val.fit <- lme4::lmer(dly_effect_ON ~ 1 + valence + (1|sub_id), data=data_subset)
+lpp.fit <- lme4::lmer(dly_effect_ON ~ 1 + LPP + (1|sub_id), data=data_subset)
+med.fit <- lme4::lmer(LPP ~ 1 + valence + (1|sub_id),
+                      data=data_subset)
+out.fit <- lme4::lmer(dly_effect_ON ~ 1 + valence + LPP + (1|sub_id),
+                      data=data_subset)
+med.out <- mediate(med.fit, out.fit, treat = "valence", mediator = "LPP",
+                   control.value = "NEU", treat.value = "NEG",
+                   sims = sims)
+
+#Produce output in console and plots
+cat("\n\n\n####### SUBJECT AVERAGED DELAY EFFECT #######\n\n")
+print(summary(as_lmerModLmerTest(med.fit)))
+cat("\n\n")
+print(summary(as_lmerModLmerTest(lpp.fit)))
+cat("\n\n")
+print(summary(as_lmerModLmerTest(val.fit)))
+cat("\n\n")
+print(summary(as_lmerModLmerTest(out.fit)))
+cat("\n\n")
+print(summary(med.out))
+plot(med.out)
+title("WORD AVERAGED DELAY EFFECT")
+
+#Calculate mediation with response bias controlled
+val.fit <- lme4::lmer(dly_effect_ON ~ 1 + valence + dly_effect_bias + (1|sub_id), data=data_subset)
+lpp.fit <- lme4::lmer(dly_effect_ON ~ 1 + LPP + dly_effect_bias + (1|sub_id), data=data_subset)
+med.fit <- lme4::lmer(LPP ~ 1 + valence + dly_effect_bias + (1|sub_id),
+                      data=data_subset)
+out.fit <- lme4::lmer(dly_effect_ON ~ 1 + valence + LPP + dly_effect_bias + (1|sub_id),
+                      data=data_subset)
+med.out <- mediate(med.fit, out.fit, treat = "valence", mediator = "LPP",
+                   control.value = "NEU", treat.value = "NEG",
+                   sims = sims)
+
+#Produce output in console and plots
+cat("\n\n\n####### SUBJECT AVERAGED DELAY EFFECT (CONTROL FOR BIAS) #######\n\n")
+print(summary(as_lmerModLmerTest(med.fit)))
+cat("\n\n")
+print(summary(as_lmerModLmerTest(lpp.fit)))
+cat("\n\n")
+print(summary(as_lmerModLmerTest(val.fit)))
+cat("\n\n")
+print(summary(as_lmerModLmerTest(out.fit)))
+cat("\n\n")
+print(summary(med.out))
+plot(med.out)
+title("WORD AVERAGED DELAY EFFECT (CONTROL FOR BIAS)")
+
+
 
 sink()
