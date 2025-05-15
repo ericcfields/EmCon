@@ -3,7 +3,7 @@
 Make bar graphs of memory results for EmCon
 
 Author:Eric Fields
-Version Date: 18 April 2025
+Version Date: 22 April 2025
 """
 
 from os.path import join
@@ -53,7 +53,7 @@ for DV in DVs:
     
     fig = sns.boxplot(data=sdata, x='delay', y=DV, hue='valence',
                        palette=['dimgray', 'firebrick'],
-                       whis=(0, 100), fliersize=0, showmeans=True,
+                       whis=(5, 95), fliersize=0, showmeans=True,
                        meanprops={'marker': 's',
                                   'markerfacecolor':'lime',
                                   'markeredgecolor':'lime',
