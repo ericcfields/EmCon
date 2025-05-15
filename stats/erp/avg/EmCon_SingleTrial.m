@@ -1,7 +1,7 @@
 %Get single trial data for EmCon analyses
 %
 %Author: Eric Fields
-%Version Date: 16 March 2024
+%Version Date: 5 August 2024
 
 %% SET-UP
 
@@ -53,6 +53,9 @@ for s = 1:length(subs)
     %Find psychopy encoding file
     behav_files = {dir(fullfile(main_dir, 'psychopy')).name};
     behav_file = behav_files(contains(behav_files, [subs{s} '_enc']) & contains(behav_files, '.csv'));
+    if any(contains(behav_file, '_corrected'))
+        behav_file = behav_file(contains(behav_file, '_corrected'));
+    end
     assert(length(behav_file) == 1);
     behav_file = behav_file{1};
     %Import psychopy data to table
@@ -61,10 +64,14 @@ for s = 1:length(subs)
     idx = ~isnan(behav_data{:, 'unique_id'});
     behav_data = behav_data(idx, :);
     
-    %Deal with missing tirials for 15_EmCon (4 trials not recorded after
+    %Deal with missing trials for 15_EmCon (4 trials not recorded after
     %2nd long break)
     if strcmp(subs{s}, '15_EmCon')
         behav_data = behav_data([1:300, 305:440], :);
+    end
+    %Deal with missing trials for 33_EmCon
+    if strcmp(subs{s}, '33_EmCon')
+        behav_data = behav_data(22:end, :);
     end
 
     %Check that trials match in EEG data and psychopy data
