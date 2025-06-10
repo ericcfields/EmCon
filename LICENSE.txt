@@ -1,4 +1,4 @@
-Copyright (c) 2024, Eric Fields
+Copyright (c) 2025, Eric Fields
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
