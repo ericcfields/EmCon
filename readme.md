@@ -1,6 +1,6 @@
 # EmCon
 
-Last updated: 8 March 2024
+Last updated:10 June 2025
 
 **Summary**
 
@@ -9,12 +9,12 @@ This study is designed to examine the relationship between the late positive pot
 **Contact Information**
 
 Eric Fields  
-fieldsec@westminster.edu  
-Westminster College  
+e_fields2@uncg.edu  
+UNC Greensboro  
 
 **License**
 
-Copyright (c) 2024, Eric Fields  
+Copyright (c) 2025, Eric Fields  
 All rights reserved.  
 This code is free and open source software made available under the terms of the 3-clause BSD license:  
 https://opensource.org/licenses/BSD-3-Clause
@@ -42,7 +42,7 @@ Code was developed and tested in MATLAB 2023a, EEGLAB 2023.1, ERPLAB 10.04, Pyth
 
 ### Behavioral data
 
-1. Behavioral data is processed and summarized by `EmCon_behav.py`. Assuming MATLAB is properly linked to a Python environment with the SciPy stack, this code is automatically run as part of the EEG pre-processing code, but it may need to be run again if not all data (e.g., the second memory test) is available when EEG pre-processing is done. This can be run from MATLAB by running `EmCon_behav.m` or by running the Python script directly.
+1. Behavioral data is processed and summarized by `EmCon_behav.py`.
 
 
 ### Single subject EEG data processing
