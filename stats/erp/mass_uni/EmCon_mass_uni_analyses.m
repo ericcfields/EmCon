@@ -184,5 +184,5 @@ end
 %% SAVE GND
 
 %Save GND with resutls
-GND = save_matmk(GND, 'SRME2_128Hz_wResults.GND', GND.filepath, 1);
+GND = save_matmk(GND, 'EmCon_128Hz_wResults.GND', GND.filepath, 1);
 
