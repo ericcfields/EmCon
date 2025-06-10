@@ -1,7 +1,7 @@
 %Get single trial data for EmCon analyses
 %
 %Author: Eric Fields
-%Version Date: 5 August 2024
+%Version Date: 15 May 2025
 
 %% SET-UP
 
@@ -19,7 +19,7 @@ data_log = data_log(cellfun(@ischar, data_log(:, 3)), :);
 subs = data_log(ismember(data_log(:,3), use_status));
 
 %ERP data parameters
-a_chans = {'FP2', 'Fz', 'F4'};
+a_chans = {'FP2', 'FZ', 'F4'};
 a_time_wind = [850, 1100];
 p_chans = {'CP3', 'CPZ', 'CP4', 'P3', 'PZ', 'P4'};
 p_time_wind = [500, 700];
